@@ -27,7 +27,7 @@ void setup() {
   
   int hour;
   for ( hour = 0; hour < 24; hour++ ) {
-    String [] lines = loadStrings(String.format("/Users/michael/hourly/gmet-hour-%02d.csv", hour));
+    String [] lines = loadStrings(String.format("gmet-hour-%02d.csv", hour));
     hr = new HRStat( hour );
     hours[hour] = hr;
     for (String line : lines) {
