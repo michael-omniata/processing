@@ -1,3 +1,4 @@
+hourstamp,organization_id,environment_id,project_id,platform_id,country,events,acm_events,users,acm_users,new_users,acm_new_users,payers,acm_payers,revenue,acm_revenue,purchases,acm_purchases
 1446562800,41,3,34,25,UY,12,588,3,37,0,1,0,0,0,0,0,0
 1446562800,19,3,24,2,PH,0,1595,0,3,0,0,0,0,0,0,0,0
 1446562800,41,3,21,25,AU,31119,1630738,1634,37087,26,1192,18,497,7276,308629,24,771

@@ -1,3 +1,4 @@
+hourstamp,organization_id,environment_id,project_id,platform_id,country,events,acm_events,users,acm_users,new_users,acm_new_users,payers,acm_payers,revenue,acm_revenue,purchases,acm_purchases
 1446523200,97,1,12,1,HU,0,2,0,1,0,1,0,0,0,0,0,0
 1446523200,108,1,1,1,RE,19,65,2,3,0,0,0,0,0,0,0,0
 1446523200,34,3,16,25,DO,428,1530,3,20,0,0,0,0,0,0,0,0

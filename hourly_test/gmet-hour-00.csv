@@ -1,3 +1,4 @@
+hourstamp,organization_id,environment_id,project_id,platform_id,country,events,acm_events,users,acm_users,new_users,acm_new_users,payers,acm_payers,revenue,acm_revenue,purchases,acm_purchases
 1446508800,109,1,3,1,GU,22,22,1,1,0,0,0,0,0,0,0,0
 1446508800,41,3,21,8,BQ,134,134,6,6,1,1,0,0,0,0,0,0
 1446508800,97,1,8,1,LV,33,33,1,1,0,0,0,0,0,0,0,0
