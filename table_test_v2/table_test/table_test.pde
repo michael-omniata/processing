@@ -1,14 +1,16 @@
 import org.gicentre.utils.stat.*;    // For chart classes.
 Table hourly;
 BarChart hourlyChart;
+int numRows;
  
 // Initialises the sketch and loads data into the chart.
 void setup()
 {
-  float[] data = new float[5];
-  hourly = loadTable("gmet-hour-00.csv");
+  hourly = loadTable("gmet-hour-23.csv", "header, csv");
+  numRows = hourly.getRowCount();
+  float[] data = new float[numRows];
   size(500,500);
-  for(int i = 0; i < 5; i++) {
+  for(int i = 0; i < numRows; i++) {
     data[i] = hourly.getFloat(i, 1);
  }
   
