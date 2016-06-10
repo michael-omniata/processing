@@ -24,7 +24,7 @@ void setup()
   
   
   
-  size(800,800);
+  size(1000,1000);
   
   //These are all the settings for the chart
   for(int i = 0; i < 24; i++) {
@@ -43,5 +43,5 @@ void setup()
 void draw()
 {
   background(255);
-  hourlyChart.draw(50,50,width-30,height-60); 
+  hourlyChart.draw(100,50,width-150,height-100); 
 }
