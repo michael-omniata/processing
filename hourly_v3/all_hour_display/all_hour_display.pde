@@ -84,13 +84,17 @@ float[] populate(int org_id, String measure ) {
   for (int i = 0; i < 24; i++) {
     measure_value = 0;
     String filename = "gmet-hour-" + nf(i, 2) + ".csv";
-    hourly[i] = loadTable(filename, "header, csv");
-
-    //This aggregates the hourly data
-    for (TableRow row : hourly[i].findRows(str(org_id), "organization_id")) {
-      measure_value += row.getFloat(measure);
+    try {
+      hourly[i] = loadTable(filename, "header");
+      //This aggregates the hourly data
+      for (TableRow row : hourly[i].findRows(str(org_id), "organization_id")) {
+        measure_value += row.getFloat(measure);
+      }
+      data[i] = measure_value;
+    } catch (Exception e) {
+      print( "Couldn't open "+filename );
+      data[i] = 0;
     }
-    data[i] = measure_value;
   }
   return data;
 }
