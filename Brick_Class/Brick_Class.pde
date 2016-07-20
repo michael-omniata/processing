@@ -3,23 +3,52 @@ ControlP5 cp5;
 
 
 //Testing a brick class
-BrickHarness brickHarness;
+BrickFactory brickFactory;
 
 void setup() {
   background(175);
   rectMode(RADIUS); 
   size(800, 800);
 
-  brickHarness = new BrickHarness( this, 250, 250, 100 );
-  Brick testBrick = new Brick(200, 49, true);
-  
-  brickHarness.install( testBrick );
+  brickFactory = new BrickFactory( this, 300, 400 );
 }
 
 void draw() {
   background(175);
-  brickHarness.update();
+  brickFactory.update();
 }
+
+class BrickFactory {
+  int xPos, yPos;
+  int boxSize;
+  Bang button;
+  processing.core.PApplet canvas;
+  ArrayList<BrickHarness> brickHarnesses = new ArrayList<BrickHarness>();
+
+  BrickFactory( processing.core.PApplet theParent, int x, int y ) {
+    xPos = x;
+    yPos = y;
+    cp5 = new ControlP5(theParent);
+    canvas = theParent;
+    button = cp5.addBang(this, "createHarness")
+      .setPosition(40, 300)
+      .setSize(280, 40)
+      .setTriggerEvent(Bang.RELEASE)
+      .setLabel("Create Harness with brick")
+      ;
+  }
+  void createHarness() {
+    BrickHarness brickHarness = new BrickHarness( canvas, 250, 250, 100 );
+    brickHarness.install( new Brick( 200, 49, true ) );
+    brickHarnesses.add( brickHarness );
+  }
+  void update() {
+    for (BrickHarness harness : brickHarnesses) {
+      harness.update();
+    }
+  }
+}
+
 
 class BrickHarness {
   int xPos, yPos;
@@ -27,7 +56,7 @@ class BrickHarness {
   int sliderUsageValue;
   Brick brick;
   Slider usageSlider;
-  Button statusToggle;
+  Toggle statusToggle;
 
   BrickHarness( processing.core.PApplet theParent, int x, int y, int size ) {
     xPos = x;
@@ -35,32 +64,41 @@ class BrickHarness {
     boxSize = size;
     cp5 = new ControlP5(theParent);
     usageSlider = cp5.addSlider(this, "sliderUsageValue")
-      .setPosition(100, 50)
+      .setPosition(x-(boxSize/2), y-65)
       .setRange(0, 100)
       .setValue(0)
       ;
 
-    statusToggle = cp5.addButton(this, "statusToggle")
-      .setValue(0)
-      .setPosition(100, 100)
-      .setSize(100, 19)
+    statusToggle = cp5.addToggle(this, "statusToggle")
+      .setPosition(x-(boxSize/2), y-105)
+      .setSize(50, 20)
       .setCaptionLabel("State")
       ;
   }
   boolean install( Brick newBrick ) {
-    if ( brick != null ) return false;
+    if ( brick != null ) return false; // Harness already has a brick
     brick = newBrick;
     usageSlider.setValue( brick.getUsage() );
+    statusToggle.setValue( brick.getStatus() );
     return true;
   }
-  void remove() {
+  Brick remove() { // remove brick from harness and return it.
+    if ( brick == null ) return null; // Harness is empty, can't remove brick
+    Brick removedBrick = brick;
     brick = null;
     usageSlider.setValue( 0 );
+    statusToggle.setValue( false );
+    return removedBrick;
+  }
+  Brick getBrick() {
+    return brick;
   }
   void update() {
     if ( mousePressed && mouseHovering() ) {
       setX( mouseX );
       setY( mouseY );
+      usageSlider.setPosition(xPos-(boxSize/2), yPos-65);
+      statusToggle.setPosition(xPos-(boxSize/2), yPos-105);
     }
     if ( brick != null ) {
       brick.update();
@@ -78,14 +116,14 @@ class BrickHarness {
       rect(xPos, yPos, boxSize/2, boxSize/2);
     }
   }
-  void statusToggle() {
+  void statusToggle(boolean state) {
     if ( brick == null ) return;
-    brick.setStatus( !brick.getStatus() );
+    brick.setStatus( state );
   }
   boolean mouseHovering() {
     return (
-      (mouseX > xPos-boxSize) && (mouseX < (xPos+boxSize)) &&
-      (mouseY > yPos-boxSize) && (mouseY < (yPos+boxSize))
+      (mouseX > xPos-(boxSize/2)) && (mouseX < (xPos+(boxSize/2))) &&
+      (mouseY > yPos-(boxSize/2)) && (mouseY < (yPos+(boxSize/2)))
       );
   }
   int getX() { 
