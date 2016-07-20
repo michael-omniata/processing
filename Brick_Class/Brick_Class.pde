@@ -1,95 +1,137 @@
 import controlP5.*;
 ControlP5 cp5;
 
-float sliderUsageValue = 10;
 
 //Testing a brick class
-Brick testBrick = new Brick(250, 250, 200, 49, true, 100);
+BrickHarness brickHarness;
 
 void setup() {
- background(175);
- rectMode(RADIUS); 
- size(800, 800);
- cp5 = new ControlP5(this);
- cp5.addSlider("sliderUsageValue")
-     .setPosition(100,50)
-     .setRange(0,100)
-     ;
-     
- cp5.addButton("statusChange")
-     .setValue(0)
-     .setPosition(100,100)
-     .setSize(100,19)
-     .setCaptionLabel("State")
-     ;
-}
+  background(175);
+  rectMode(RADIUS); 
+  size(800, 800);
 
-void statusChange() {
-  testBrick.changeStatus( !testBrick.getStatus() );
+  brickHarness = new BrickHarness( this, 250, 250, 100 );
+  Brick testBrick = new Brick(200, 49, true);
+  
+  brickHarness.install( testBrick );
 }
-  
-  
 
 void draw() {
   background(175);
-  testBrick.changeUsage( sliderUsageValue );
-  testBrick.spawn();
-  if ( mousePressed && testBrick.mouseHovering() ) {
-    testBrick.changeX( mouseX );
-    testBrick.changeY( mouseY );
+  brickHarness.update();
+}
+
+class BrickHarness {
+  int xPos, yPos;
+  int boxSize;
+  int sliderUsageValue;
+  Brick brick;
+  Slider usageSlider;
+  Button statusToggle;
+
+  BrickHarness( processing.core.PApplet theParent, int x, int y, int size ) {
+    xPos = x;
+    yPos = y;
+    boxSize = size;
+    cp5 = new ControlP5(theParent);
+    usageSlider = cp5.addSlider(this, "sliderUsageValue")
+      .setPosition(100, 50)
+      .setRange(0, 100)
+      .setValue(0)
+      ;
+
+    statusToggle = cp5.addButton(this, "statusToggle")
+      .setValue(0)
+      .setPosition(100, 100)
+      .setSize(100, 19)
+      .setCaptionLabel("State")
+      ;
+  }
+  boolean install( Brick newBrick ) {
+    if ( brick != null ) return false;
+    brick = newBrick;
+    usageSlider.setValue( brick.getUsage() );
+    return true;
+  }
+  void remove() {
+    brick = null;
+    usageSlider.setValue( 0 );
+  }
+  void update() {
+    if ( mousePressed && mouseHovering() ) {
+      setX( mouseX );
+      setY( mouseY );
+    }
+    if ( brick != null ) {
+      brick.update();
+      if (brick.getStatus() == true) {
+        brick.setUsage( sliderUsageValue );
+        float usage = (float)brick.getUsage() / 100;
+        if (usage < .5) {
+          fill(usage*255*2, 255, 0);
+        } else if (usage >= .5) {
+          fill(255, (1-usage)*255*2, 0);
+        }
+      } else {
+        fill(0);
+      }
+      rect(xPos, yPos, boxSize/2, boxSize/2);
+    }
+  }
+  void statusToggle() {
+    if ( brick == null ) return;
+    brick.setStatus( !brick.getStatus() );
+  }
+  boolean mouseHovering() {
+    return (
+      (mouseX > xPos-boxSize) && (mouseX < (xPos+boxSize)) &&
+      (mouseY > yPos-boxSize) && (mouseY < (yPos+boxSize))
+      );
+  }
+  int getX() { 
+    return xPos;
+  }
+  int getY() { 
+    return yPos;
+  }
+  void setX(int newX) { 
+    xPos = newX;
+  }
+  void setY(int newY) { 
+    yPos = newY;
   }
 }
 
+
 class Brick {
   boolean status;
-  float capacity, usage;
-  int xPos, yPos;
-  int boxSize;
-  Brick (int x, int y, float cap, float use, boolean stat, int size) {
-    xPos = x;
-    yPos = y;
+  float capacity;
+  int usage;
+
+  Brick (float cap, int use, boolean state) {
     capacity = cap;
-    usage = use/100;
-    status = stat;
-    boxSize = size;
+    usage = use;
+    status = state;
   }
-  void spawn() {
-    if (status == true) {
-      if (usage < .5) fill(usage*255*2, 255, 0);
-      else if (usage >= .5) fill(255, (1-usage)*255*2, 0);
-      rect(xPos, yPos, boxSize/2, boxSize/2);
-      } 
-    else {
-     fill(0);
-     rect(xPos, yPos, boxSize/2, boxSize/2);
-    }
+  void update() {
+    // this might be used to periodically get the *actual* status of the brick
   }
-  void changeStatus(boolean update) {
-   status = update; 
+  void setStatus(boolean update) { 
+    status = update;
   }
-  int getX() {
-    return xPos;
-  }
-  int getY() {
-    return yPos;
-  }
-  boolean getStatus() {
+  boolean getStatus() { 
     return status;
   }
-  boolean mouseHovering() {
-    return ( (mouseX > xPos-boxSize) && (mouseX < (xPos+boxSize)) &&
-             (mouseY > yPos-boxSize) && (mouseY < (yPos+boxSize)) );
+  void setCapacity(float newCap) {
+    capacity = newCap;
   }
-  void changeX(int newX) {
-   xPos = newX; 
+  float getCapacity() {
+    return capacity;
   }
-  void changeY(int newY) {
-   yPos = newY; 
+  void setUsage(int newUsage) { 
+    usage = newUsage;
   }
-  void changeCapacity(float newCap) {
-   capacity = newCap; 
-  }
-  void changeUsage(float newUsage) {
-   usage = newUsage/100; 
+  int getUsage() {
+    return usage;
   }
 }
