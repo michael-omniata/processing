@@ -1,3 +1,5 @@
+//The Brick class, contains the status, capacity, usage, and name of a brick
+
 class Brick {
   boolean status;
   float capacity;

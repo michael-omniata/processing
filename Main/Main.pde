@@ -1,9 +1,11 @@
+//Main part of the program, contains all global variables and setup() and draw()
+
 import controlP5.*;
 ControlP5 cp5;
 
 ArrayList<NodeHarness> nodeHarnesses = new ArrayList<NodeHarness>();
 
-//Testing a brick class
+
 BrickFactory brickFactory;
 NodeHarness node001;
 

@@ -1,3 +1,5 @@
+//The BrickFactory class is used to create Brick objects
+
 class BrickFactory {
   int xPos, yPos;
   int boxSize;

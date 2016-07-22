@@ -1,3 +1,5 @@
+//The NodeHarness class contains the GUI for the node
+
 class NodeHarness {
   int xPos, yPos;
   int boxSize;

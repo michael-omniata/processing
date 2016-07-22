@@ -1,3 +1,5 @@
+//The node class has an array of bricks and their names and bricks can be "attached" to it
+
 class Node {
   ArrayList<Brick> bricks;
   ArrayList<String> deviceNames;

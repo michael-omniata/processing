@@ -1,3 +1,5 @@
+//The BrickHarness class is the GUI for a Brick, attributes can be adjusted through ControlP5 for testing
+
 class BrickHarness {
   int xPos, yPos;
   int boxSize;
