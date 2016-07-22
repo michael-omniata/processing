@@ -1,8 +1,6 @@
 //The BrickHarness class is the GUI for a Brick, attributes can be adjusted through ControlP5 for testing
 
-class BrickHarness {
-  int xPos, yPos;
-  int boxSize;
+class BrickHarness extends Harness {
   int sliderUsageValue;
   Brick brick;
   Slider usageSlider;
@@ -10,12 +8,9 @@ class BrickHarness {
   Textfield cli;
   Node container;
 
-  BrickHarness( processing.core.PApplet theParent, int x, int y, int size ) {
-    xPos = x;
-    yPos = y;
-    boxSize = size;
+  BrickHarness( int x, int y, int size ) {
+    super( x, y, size );
     container = null;
-    cp5 = new ControlP5(theParent);
     usageSlider = cp5.addSlider(this, "sliderUsageValue")
       .setPosition(x-(boxSize/2), y-65)
       .setRange(0, 100)
@@ -26,13 +21,11 @@ class BrickHarness {
       .setSize(50, 20)
       .setCaptionLabel("State")
       ;
-    cli = cp5.addTextfield("cli")
+    cli = cp5.addTextfield(this, "cli")
       .setPosition(x, y-105)
       .setAutoClear(false)
       .setSize(50, 20)
       ;
-  }
-  void cliCallback() {
   }
   void setContainer( Node _node ) {
     container = _node;
@@ -62,9 +55,8 @@ class BrickHarness {
     return brick;
   }
   void update() {
+    super.update();
     if ( mousePressed && mouseHovering() ) {
-      setX( mouseX );
-      setY( mouseY );
       usageSlider.setPosition(xPos-(boxSize/2), yPos-65);
       statusToggle.setPosition(xPos-(boxSize/2), yPos-105);
       cli.setPosition(xPos, yPos-105);
@@ -85,12 +77,12 @@ class BrickHarness {
         brick.setUsage( sliderUsageValue );
         float usage = (float)brick.getUsage() / 100;
         if (usage < .5) {
-          fill(usage*255*2, 255, 0);
+          super.setColor(color(usage*255*2, 255, 0));
         } else if (usage >= .5) {
-          fill(255, (1-usage)*255*2, 0);
+          super.setColor(color(255, (1-usage)*255*2, 0));
         }
       } else {
-        fill(0);
+        super.setColor(color(0));
       }
       rect(xPos, yPos, boxSize/2, boxSize/2);
     }
@@ -98,23 +90,5 @@ class BrickHarness {
   void statusToggle(boolean state) {
     if ( brick == null ) return;
     brick.setStatus( state );
-  }
-  boolean mouseHovering() {
-    return (
-      (mouseX > xPos-(boxSize/2)) && (mouseX < (xPos+(boxSize/2))) &&
-      (mouseY > yPos-(boxSize/2)) && (mouseY < (yPos+(boxSize/2)))
-      );
-  }
-  int getX() { 
-    return xPos;
-  }
-  int getY() { 
-    return yPos;
-  }
-  void setX(int newX) { 
-    xPos = newX;
-  }
-  void setY(int newY) { 
-    yPos = newY;
   }
 }

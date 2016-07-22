@@ -13,10 +13,12 @@ void setup() {
   background(175);
   rectMode(RADIUS); 
   size(800, 800);
+  cp5 = new ControlP5(this);
 
-  node001 = new NodeHarness( this, "node001", 300, 450, 100 );
+  node001 = new NodeHarness("node001", 300, 450, 100 );
   nodeHarnesses.add( node001 );
-  brickFactory = new BrickFactory( this, 300, 400 );
+  brickFactory = new BrickFactory( 300, 400, 50 );
+  brickFactory.setColor( color( 0, 0, 255 ) );
 }
 
 void draw() {
