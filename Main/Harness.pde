@@ -1,18 +1,42 @@
 
 class Harness {
-  int xPos, yPos;
+  float xPos, yPos;
   int len, hgt;
+  boolean overBox = false;
+  boolean locked = false;
+  float xOffset = 0.0; 
+  float yOffset = 0.0; 
 
-  Harness( int x, int y, int l, int h ) {
+  Harness( float x, float y, int l, int h ) {
     xPos = x;
     yPos = y;
     len = l;
     hgt = h;
   }
   void update() {
-    if ( mousePressed && mouseHovering() ) {
-      setX( mouseX );
-      setY( mouseY );
+    if ( mouseHovering() ) {
+      overBox = true;  
+      if (!locked) { 
+        stroke(255);
+      }
+    } else {
+      stroke(153);
+      overBox = false;
+    }
+    if (locked) {
+      xPos = mouseX-xOffset; 
+      yPos = mouseY-yOffset;
+    }
+    if ( mousePressed ) {
+      if (overBox) { 
+        locked = true;
+      } else {
+        locked = false;
+      }
+      xOffset = mouseX-xPos; 
+      yOffset = mouseY-yPos;
+    } else {
+      locked = false;
     }
   }
   boolean mouseHovering() {
@@ -27,16 +51,16 @@ class Harness {
   void setStroke( int x) {
     stroke( x );
   }
-  int getX() { 
+  float getX() { 
     return xPos;
   }
-  int getY() { 
+  float getY() { 
     return yPos;
   }
-  void setX(int newX) { 
+  void setX(float newX) { 
     xPos = newX;
   }
-  void setY(int newY) { 
+  void setY(float newY) { 
     yPos = newY;
   }
   void setLength(int newLen) {

@@ -19,7 +19,12 @@ void setup() {
   nodeHarnesses.add( node001 );
   brickFactory = new BrickFactory( 300, 400, 50, 50 ); //Because of how mouseHovering works, length and width have to be the same to be able to drag correctly
   brickFactory.setColor( color( 0, 0, 255 ) );
+  frameRate(30);
 }
+
+//void mousePressed() {
+//  println( "main:mousepressed" );
+//}
 
 void draw() {
   background(175);
