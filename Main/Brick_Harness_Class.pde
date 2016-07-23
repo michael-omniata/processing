@@ -12,20 +12,20 @@ class BrickHarness extends Harness {
     super( x, y, l, h );
     container = null;
     usageSlider = cp5.addSlider(this, "sliderUsageValue")
-      .setPosition(x-(len/2), y-65)
       .setRange(0, 100)
       .setValue(0)
       ;
     statusToggle = cp5.addToggle(this, "statusToggle")
-      .setPosition(x-(len/2), y-105)
       .setSize(50, 20)
       .setCaptionLabel("State")
       ;
     cli = cp5.addTextfield(this, "cli")
-      .setPosition(x, y-105)
       .setAutoClear(false)
       .setSize(50, 20)
       ;
+    addController( usageSlider, -len/2, -65 );
+    addController( statusToggle, -len/2, -105 );
+    addController( cli, 0, -105 );
   }
   void setContainer( Node _node ) {
     container = _node;
@@ -56,11 +56,6 @@ class BrickHarness extends Harness {
   }
   void update() {
     super.update();
-    if ( mousePressed && mouseHovering() ) {
-      usageSlider.setPosition(xPos-(len/2), yPos-65);
-      statusToggle.setPosition(xPos-(len/2), yPos-105);
-      cli.setPosition(xPos, yPos-105);
-    }
     if ( container == null ) {
       String input = cli.getText();
       if ( !input.equals("") ) {

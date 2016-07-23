@@ -13,6 +13,7 @@ class BrickFactory extends Harness {
       .setTriggerEvent(Bang.RELEASE)
       .setLabel("Create Harness with brick")
       ;
+    addController( button, x, y );
   }
   void createHarness() {
     BrickHarness brickHarness = new BrickHarness( 250, 250, 100, 50 );

@@ -1,3 +1,15 @@
+class HarnessController {
+  Controller c;
+  float xOffset, yOffset;
+  HarnessController( Controller _c, float _xOffset, float _yOffset ) {
+    c = _c;
+    xOffset = _xOffset;
+    yOffset = _yOffset;
+  }
+  void setPosition( float _xPos, float _yPos ) {
+    c.setPosition( _xPos+xOffset, _yPos+yOffset );
+  }
+}
 
 class Harness {
   float xPos, yPos;
@@ -5,13 +17,20 @@ class Harness {
   boolean overBox = false;
   boolean locked = false;
   float xOffset = 0.0; 
-  float yOffset = 0.0; 
+  float yOffset = 0.0;
+  ArrayList<HarnessController>harnessControllers;
 
-  Harness( float x, float y, int l, int h ) {
+  Harness( int x, int y, int l, int h ) {
     xPos = x;
     yPos = y;
     len = l;
     hgt = h;
+    harnessControllers = new ArrayList<HarnessController>();
+  }
+  void addController( Controller c, int _xOffset, int _yOffset ) {
+    HarnessController hc = new HarnessController( c, _xOffset, _yOffset );
+    hc.setPosition( xPos, yPos );
+    harnessControllers.add( hc );
   }
   void update() {
     if ( mouseHovering() ) {
@@ -24,8 +43,13 @@ class Harness {
       overBox = false;
     }
     if (locked) {
+      // If we're here, the harness is selected.
+      // Move it, and all of the associated controllers
       xPos = mouseX-xOffset; 
       yPos = mouseY-yOffset;
+      for (HarnessController hc : harnessControllers ) {
+        hc.setPosition( xPos, yPos );
+      }
     }
     if ( mousePressed ) {
       if (overBox) { 

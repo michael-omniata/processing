@@ -2,9 +2,11 @@
 
 class NodeHarness extends Harness {
   Node node;
+  int slots;
   ArrayList<BrickHarness> brickHarnesses;
   NodeHarness( String name, int x, int y, int l, int h ) {
-    super( x, y, l, h );
+    super( x, y, l, h * 1 );
+    slots = 8;
     node = new Node( name );
     brickHarnesses = new ArrayList<BrickHarness>();
   }
