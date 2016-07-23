@@ -8,16 +8,16 @@ class BrickHarness extends Harness {
   Textfield cli;
   Node container;
 
-  BrickHarness( int x, int y, int size ) {
-    super( x, y, size );
+  BrickHarness( int x, int y, int l, int h ) {
+    super( x, y, l, h );
     container = null;
     usageSlider = cp5.addSlider(this, "sliderUsageValue")
-      .setPosition(x-(boxSize/2), y-65)
+      .setPosition(x-(len/2), y-65)
       .setRange(0, 100)
       .setValue(0)
       ;
     statusToggle = cp5.addToggle(this, "statusToggle")
-      .setPosition(x-(boxSize/2), y-105)
+      .setPosition(x-(len/2), y-105)
       .setSize(50, 20)
       .setCaptionLabel("State")
       ;
@@ -57,8 +57,8 @@ class BrickHarness extends Harness {
   void update() {
     super.update();
     if ( mousePressed && mouseHovering() ) {
-      usageSlider.setPosition(xPos-(boxSize/2), yPos-65);
-      statusToggle.setPosition(xPos-(boxSize/2), yPos-105);
+      usageSlider.setPosition(xPos-(len/2), yPos-65);
+      statusToggle.setPosition(xPos-(len/2), yPos-105);
       cli.setPosition(xPos, yPos-105);
     }
     if ( container == null ) {
@@ -84,7 +84,7 @@ class BrickHarness extends Harness {
       } else {
         super.setColor(color(0));
       }
-      rect(xPos, yPos, boxSize/2, boxSize/2);
+      rect(xPos, yPos, len/2, hgt/2);
     }
   }
   void statusToggle(boolean state) {

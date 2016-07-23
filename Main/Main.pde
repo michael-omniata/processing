@@ -15,9 +15,9 @@ void setup() {
   size(800, 800);
   cp5 = new ControlP5(this);
 
-  node001 = new NodeHarness("node001", 300, 450, 100 );
+  node001 = new NodeHarness("node001", 300, 450, 100, 50 );
   nodeHarnesses.add( node001 );
-  brickFactory = new BrickFactory( 300, 400, 50 );
+  brickFactory = new BrickFactory( 300, 400, 50, 50 ); //Because of how mouseHovering works, length and width have to be the same to be able to drag correctly
   brickFactory.setColor( color( 0, 0, 255 ) );
 }
 

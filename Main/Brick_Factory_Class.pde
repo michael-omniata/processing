@@ -5,18 +5,18 @@ class BrickFactory extends Harness {
   processing.core.PApplet canvas;
   ArrayList<BrickHarness> brickHarnesses = new ArrayList<BrickHarness>();
 
-  BrickFactory( int x, int y, int size ) {
-    super( x, y, size );
+  BrickFactory( int x, int y, int l, int h) {
+    super( x, y, l, h );
     button = cp5.addBang(this, "createHarness")
       .setPosition(x, y)
-      .setSize(size, size)
+      .setSize(l, h)
       .setTriggerEvent(Bang.RELEASE)
       .setLabel("Create Harness with brick")
       ;
   }
   void createHarness() {
-    BrickHarness brickHarness = new BrickHarness( 250, 250, 100 );
-    brickHarness.install( new Brick( 200, 49, false ) );
+    BrickHarness brickHarness = new BrickHarness( 250, 250, 100, 50 );
+    brickHarness.install( new Brick( 200, 0, false ) );
     brickHarnesses.add( brickHarness );
   }
   void update() {
