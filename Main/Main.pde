@@ -17,7 +17,7 @@ void setup() {
 
   node001 = new NodeHarness("node001", 300, 450, 100 );
   nodeHarnesses.add( node001 );
-  brickFactory = new BrickFactory( 300, 400, 50 );
+  brickFactory = new BrickFactory( 50, 50, 50 );
   brickFactory.setColor( color( 0, 0, 255 ) );
   frameRate(30);
 }
