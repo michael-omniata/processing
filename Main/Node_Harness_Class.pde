@@ -1,12 +1,18 @@
 //The NodeHarness class contains the GUI for the node
 
+int BRICK_COLUMNS = 6;
+int COLUMN_WIDTH = 100;
+int COLUMN_HEIGHT = 100;
+int COLUMN_DIVIDER = 5;
+int ROW_DIVIDER = 10;
+int NODE_SPACER = 30;
+
 class NodeHarness extends Harness {
   Node node;
   int slots;
   ArrayList<BrickHarness> brickHarnesses;
   NodeHarness( String name, int x, int y, int l, int h ) {
-    super( x, y, l, h * 1 );
-    slots = 8;
+    super( x, y, l, h );
     node = new Node( name );
     brickHarnesses = new ArrayList<BrickHarness>();
   }
@@ -17,28 +23,27 @@ class NodeHarness extends Harness {
   void update() {
     super.update();
     super.setColor(color(0, 0, 255));
+    super.draw();
+    for ( int i = 0; i < brickHarnesses.size(); i++ ) {
+      BrickHarness b = brickHarnesses.get(i);
+      int row = i / BRICK_COLUMNS;
+      int col = i % BRICK_COLUMNS;
+      
+      float xPosNew = ( xPos + (COLUMN_WIDTH * col) + (COLUMN_DIVIDER * col) );
+      float yPosNew = ( yPos + (COLUMN_HEIGHT-hgt) + hgt + NODE_SPACER + (COLUMN_HEIGHT * row) + (ROW_DIVIDER * row) );
+      b.setPosition( xPosNew, yPosNew );
+    }
+    /*
     strokeWeight(3); //For some reason this is changing the brick harnesses's strokes and strokeWeights as well
     stroke(255);
     beginShape(QUAD_STRIP);
-    vertex(xPos, yPos);
-    vertex((xPos+len), yPos);
-    vertex(xPos, (yPos+hgt));
-    vertex((xPos+len), (yPos+hgt));
-    vertex(xPos, (yPos+2*hgt));
-    vertex((xPos+len), (yPos+2*hgt));
-    vertex(xPos, (yPos+3*hgt));
-    vertex((xPos+len), (yPos+3*hgt));
-    vertex(xPos, (yPos+4*hgt));
-    vertex((xPos+len), (yPos+4*hgt));
-    vertex(xPos, (yPos+5*hgt));
-    vertex((xPos+len), yPos+5*hgt);
-    vertex(xPos, (yPos+6*hgt));
-    vertex((xPos+len), (yPos+6*hgt));
-    vertex(xPos, (yPos+7*hgt));
-    vertex((xPos+len), (yPos+7*hgt));
-    vertex(xPos, (yPos+8*hgt));
-    vertex((xPos+len), (yPos+8*hgt));
+    for (int i = 0; i <= slots; i++ ) {
+      vertex(xPos, yPos+i*(hgt/slots));
+      vertex((xPos+len), (yPos+i*(hgt/slots)));
+    }
+    strokeWeight(1);
     endShape();
+    */
   }
   void attach( BrickHarness brickHarness ) {
     brickHarnesses.add( brickHarness );

@@ -21,6 +21,9 @@ class Harness {
     hc.setPosition( xPos, yPos );
     harnessControllers.add( hc );
   }
+  void draw() {
+    rect(xPos, yPos, len, hgt);
+  }
   void update() {
     if ( mouseHovering() ) {
       overBox = true;  
@@ -34,11 +37,7 @@ class Harness {
     if (locked) {
       // If we're here, the harness is selected.
       // Move it, and all of the associated controllers
-      xPos = mouseX-xOffset; 
-      yPos = mouseY-yOffset;
-      for (HarnessController hc : harnessControllers ) {
-        hc.setPosition( xPos, yPos );
-      }
+      setPosition( mouseX-xOffset, mouseY-yOffset );
     }
     if ( mousePressed ) {
       if (overBox) { 
@@ -54,9 +53,13 @@ class Harness {
   }
   boolean mouseHovering() {
     return (
-      (mouseX > (xPos-len/2)) && (mouseX < (xPos+len/2)) &&
-      (mouseY > (yPos-hgt/2)) && (mouseY < (yPos+hgt/2))
-      );
+      ((mouseX >= xPos) && (mouseX <= xPos+len)) &&
+      ((mouseY >= yPos) && (mouseY <= yPos+hgt)) );
+    /*  return (
+     (mouseX > (xPos-len/2)) && (mouseX < (xPos+len/2)) &&
+     (mouseY > (yPos-hgt/2)) && (mouseY < (yPos+hgt/2))
+     );
+     */
   }
   void setColor( color c ) {
     fill( c );
@@ -70,6 +73,14 @@ class Harness {
   float getY() { 
     return yPos;
   }
+  void setPosition( float _x, float _y ) {
+    xPos = _x;
+    yPos = _y;
+    for (HarnessController hc : harnessControllers ) {
+      hc.setPosition( xPos, yPos );
+    }
+  }
+
   void setX(float newX) { 
     xPos = newX;
   }
@@ -77,9 +88,9 @@ class Harness {
     yPos = newY;
   }
   void setLength(int newLen) {
-   len = newLen; 
+    len = newLen;
   }
   void setHeight(int newHgt) {
-   hgt = newHgt; 
+    hgt = newHgt;
   }
 }

@@ -8,7 +8,6 @@ class BrickFactory extends Harness {
   BrickFactory( int x, int y, int l, int h) {
     super( x, y, l, h );
     button = cp5.addBang(this, "createHarness")
-      .setPosition(x, y)
       .setSize(l, h)
       .setTriggerEvent(Bang.RELEASE)
       .setLabel("Create Harness with brick")

@@ -11,7 +11,6 @@ NodeHarness node001;
 
 void setup() {
   background(175);
-  rectMode(RADIUS); 
   size(800, 800);
   cp5 = new ControlP5(this);
 
@@ -21,10 +20,6 @@ void setup() {
   brickFactory.setColor( color( 0, 0, 255 ) );
   frameRate(30);
 }
-
-//void mousePressed() {
-//  println( "main:mousepressed" );
-//}
 
 void draw() {
   background(175);

@@ -23,9 +23,9 @@ class BrickHarness extends Harness {
       .setAutoClear(false)
       .setSize(50, 20)
       ;
-    addController( usageSlider, -len/2, -65 );
-    addController( statusToggle, -len/2, -105 );
-    addController( cli, 0, -105 );
+    addController( usageSlider, 0, -15 );
+    addController( statusToggle, 0, -50 );
+    addController( cli, len/2, -50 );
   }
   void setContainer( Node _node ) {
     container = _node;
@@ -79,7 +79,8 @@ class BrickHarness extends Harness {
       } else {
         super.setColor(color(0));
       }
-      rect(xPos, yPos, len/2, hgt/2);
+      super.draw();
+      
     }
   }
   void statusToggle(boolean state) {
