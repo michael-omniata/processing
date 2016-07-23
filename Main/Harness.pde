@@ -1,7 +1,12 @@
 
 class Harness {
-  int xPos, yPos;
+  float xPos, yPos;
   int boxSize;
+  boolean overBox = false;
+  boolean locked = false;
+  float xOffset = 0.0; 
+  float yOffset = 0.0; 
+
 
   Harness( int x, int y, int size ) {
     xPos = x;
@@ -9,9 +14,29 @@ class Harness {
     boxSize = size;
   }
   void update() {
-    if ( mousePressed && mouseHovering() ) {
-      setX( mouseX );
-      setY( mouseY );
+    if ( mouseHovering() ) {
+      overBox = true;  
+      if (!locked) { 
+        stroke(255);
+      }
+    } else {
+      stroke(153);
+      overBox = false;
+    }
+    if (locked) {
+      xPos = mouseX-xOffset; 
+      yPos = mouseY-yOffset;
+    }
+    if ( mousePressed ) {
+      if (overBox) { 
+        locked = true;
+      } else {
+        locked = false;
+      }
+      xOffset = mouseX-xPos; 
+      yOffset = mouseY-yPos;
+    } else {
+      locked = false;
     }
   }
   boolean mouseHovering() {
@@ -23,16 +48,16 @@ class Harness {
   void setColor( color c ) {
     fill( c );
   }
-  int getX() { 
+  float getX() { 
     return xPos;
   }
-  int getY() { 
+  float getY() { 
     return yPos;
   }
-  void setX(int newX) { 
+  void setX(float newX) { 
     xPos = newX;
   }
-  void setY(int newY) { 
+  void setY(float newY) { 
     yPos = newY;
   }
 }
