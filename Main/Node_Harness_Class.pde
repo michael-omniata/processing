@@ -28,22 +28,22 @@ class NodeHarness extends Harness {
       BrickHarness b = brickHarnesses.get(i);
       int row = i / BRICK_COLUMNS;
       int col = i % BRICK_COLUMNS;
-      
+
       float xPosNew = ( xPos + (COLUMN_WIDTH * col) + (COLUMN_DIVIDER * col) );
       float yPosNew = ( yPos + (COLUMN_HEIGHT-hgt) + hgt + NODE_SPACER + (COLUMN_HEIGHT * row) + (ROW_DIVIDER * row) );
       b.setPosition( xPosNew, yPosNew );
     }
     /*
     strokeWeight(3); //For some reason this is changing the brick harnesses's strokes and strokeWeights as well
-    stroke(255);
-    beginShape(QUAD_STRIP);
-    for (int i = 0; i <= slots; i++ ) {
-      vertex(xPos, yPos+i*(hgt/slots));
-      vertex((xPos+len), (yPos+i*(hgt/slots)));
-    }
-    strokeWeight(1);
-    endShape();
-    */
+     stroke(255);
+     beginShape(QUAD_STRIP);
+     for (int i = 0; i <= slots; i++ ) {
+     vertex(xPos, yPos+i*(hgt/slots));
+     vertex((xPos+len), (yPos+i*(hgt/slots)));
+     }
+     strokeWeight(1);
+     endShape();
+     */
   }
   void attach( BrickHarness brickHarness ) {
     brickHarnesses.add( brickHarness );

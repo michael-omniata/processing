@@ -24,8 +24,8 @@ class BrickFactory extends Harness {
     for (BrickHarness harness : brickHarnesses) {
       harness.update();
     }
-    if ( mousePressed && button.isMouseOver()) {
+    /*if ( mousePressed && button.isMouseOver()) { <- Currently this makes the button jump around whenever clicked and is a hassle to deal with. Moved button to a reasonable spot and commented out this code
       button.setPosition(xPos, yPos);
-    }
+    }*/
   }
 }
