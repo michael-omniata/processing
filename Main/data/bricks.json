@@ -1,0 +1,654 @@
+{
+   "gluster02-node002" : {
+      "/dev/xvdo" : {
+         "use" : "82",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "871428384",
+         "capacity" : "1073217536",
+         "avail" : "201789152"
+      },
+      "/dev/xvdh" : {
+         "use" : "88",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "938439360",
+         "capacity" : "1073217536",
+         "avail" : "134778176"
+      },
+      "/dev/mnt" : {
+         "volume" : "gvtmp",
+         "status" : 1
+      },
+      "/dev/xvdp" : {
+         "use" : "84",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "893708644",
+         "capacity" : "1073217536",
+         "avail" : "179508892"
+      },
+      "/dev/xvdw" : {
+         "use" : "86",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "913041100",
+         "capacity" : "1073217536",
+         "avail" : "160176436"
+      },
+      "/dev/xvdi" : {
+         "use" : "88",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "933923620",
+         "capacity" : "1073217536",
+         "avail" : "139293916"
+      },
+      "/dev/xvdf" : {
+         "use" : "88",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "943609788",
+         "capacity" : "1073217536",
+         "avail" : "129607748"
+      },
+      "/dev/xvdm" : {
+         "use" : "93",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "987380880",
+         "capacity" : "1073217536",
+         "avail" : "85836656"
+      },
+      "/dev/xvdx" : {
+         "use" : "90",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "956925240",
+         "capacity" : "1073217536",
+         "avail" : "116292296"
+      },
+      "/dev/xvdg" : {
+         "use" : "89",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "944698756",
+         "capacity" : "1073217536",
+         "avail" : "128518780"
+      },
+      "/dev/xvdr" : {
+         "use" : "80",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "856850464",
+         "capacity" : "1073217536",
+         "avail" : "216367072"
+      },
+      "/dev/xvdy" : {
+         "use" : "89",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "944469936",
+         "capacity" : "1073217536",
+         "avail" : "128747600"
+      },
+      "/dev/xvdl" : {
+         "use" : "94",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "998094996",
+         "capacity" : "1073217536",
+         "avail" : "75122540"
+      },
+      "/dev/xvds" : {
+         "use" : "83",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "884547416",
+         "capacity" : "1073217536",
+         "avail" : "188670120"
+      },
+      "/dev/xvdv" : {
+         "use" : "86",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "913955756",
+         "capacity" : "1073217536",
+         "avail" : "159261780"
+      },
+      "/dev/xvdk" : {
+         "use" : "94",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "998109844",
+         "capacity" : "1073217536",
+         "avail" : "75107692"
+      },
+      "/dev/xvdu" : {
+         "use" : "84",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "898217740",
+         "capacity" : "1073217536",
+         "avail" : "174999796"
+      },
+      "/dev/xvdn" : {
+         "use" : "92",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "984555188",
+         "capacity" : "1073217536",
+         "avail" : "88662348"
+      },
+      "/dev/xvdj" : {
+         "use" : "32",
+         "volume" : "ghome",
+         "status" : 1,
+         "used" : "334920720",
+         "capacity" : "1073217536",
+         "avail" : "738296816"
+      },
+      "/dev/xvdq" : {
+         "use" : "87",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "924774980",
+         "capacity" : "1073217536",
+         "avail" : "148442556"
+      },
+      "/dev/xvdt" : {
+         "use" : "93",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "987367364",
+         "capacity" : "1073217536",
+         "avail" : "85850172"
+      }
+   },
+   "gluster02-node001" : {
+      "/dev/xvdo" : {
+         "use" : "93",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "994003372",
+         "capacity" : "1073217536",
+         "avail" : "79214164"
+      },
+      "/dev/xvdh" : {
+         "use" : "87",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "924747716",
+         "capacity" : "1073217536",
+         "avail" : "148469820"
+      },
+      "/dev/mnt" : {
+         "volume" : "gvtmp",
+         "status" : 1
+      },
+      "/dev/xvdw" : {
+         "use" : "87",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "930531360",
+         "capacity" : "1073217536",
+         "avail" : "142686176"
+      },
+      "/dev/xvdf" : {
+         "use" : "86",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "919528228",
+         "capacity" : "1073217536",
+         "avail" : "153689308"
+      },
+      "/dev/xvdi" : {
+         "use" : "88",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "936326016",
+         "capacity" : "1073217536",
+         "avail" : "136891520"
+      },
+      "/dev/xvdm" : {
+         "use" : "85",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "911835884",
+         "capacity" : "1073217536",
+         "avail" : "161381652"
+      },
+      "/dev/xvdx" : {
+         "use" : "93",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "987375992",
+         "capacity" : "1073217536",
+         "avail" : "85841544"
+      },
+      "/dev/xvdg" : {
+         "use" : "89",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "946175536",
+         "capacity" : "1073217536",
+         "avail" : "127042000"
+      },
+      "/dev/xvdr" : {
+         "use" : "93",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "987370836",
+         "capacity" : "1073217536",
+         "avail" : "85846700"
+      },
+      "/dev/xvdy" : {
+         "use" : "86",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "920827056",
+         "capacity" : "1073217536",
+         "avail" : "152390480"
+      },
+      "/dev/xvdl" : {
+         "use" : "94",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "998116124",
+         "capacity" : "1073217536",
+         "avail" : "75101412"
+      },
+      "/dev/xvds" : {
+         "use" : "82",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "877236880",
+         "capacity" : "1073217536",
+         "avail" : "195980656"
+      },
+      "/dev/xvdv" : {
+         "use" : "85",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "901704764",
+         "capacity" : "1073217536",
+         "avail" : "171512772"
+      },
+      "/dev/xvdk" : {
+         "use" : "94",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "998098928",
+         "capacity" : "1073217536",
+         "avail" : "75118608"
+      },
+      "/dev/xvdu" : {
+         "use" : "87",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "930282904",
+         "capacity" : "1073217536",
+         "avail" : "142934632"
+      },
+      "/dev/xvdn" : {
+         "use" : "84",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "900724624",
+         "capacity" : "1073217536",
+         "avail" : "172492912"
+      },
+      "/dev/xvdj" : {
+         "use" : "93",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "987382008",
+         "capacity" : "1073217536",
+         "avail" : "85835528"
+      },
+      "/dev/xvdq" : {
+         "use" : "82",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "876463776",
+         "capacity" : "1073217536",
+         "avail" : "196753760"
+      },
+      "/dev/xvdt" : {
+         "use" : "85",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "906636180",
+         "capacity" : "1073217536",
+         "avail" : "166581356"
+      }
+   },
+   "gluster02-node003" : {
+      "/dev/xvdo" : {
+         "use" : "84",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "892781776",
+         "capacity" : "1073217536",
+         "avail" : "180435760"
+      },
+      "/dev/xvdh" : {
+         "use" : "84",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "897553932",
+         "capacity" : "1073217536",
+         "avail" : "175663604"
+      },
+      "/dev/xvdp" : {
+         "use" : "84",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "897681748",
+         "capacity" : "1073217536",
+         "avail" : "175535788"
+      },
+      "/dev/xvdw" : {
+         "use" : "86",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "917664868",
+         "capacity" : "1073217536",
+         "avail" : "155552668"
+      },
+      "/dev/xvdi" : {
+         "use" : "87",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "927468860",
+         "capacity" : "1073217536",
+         "avail" : "145748676"
+      },
+      "/dev/xvdf" : {
+         "use" : "86",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "912932436",
+         "capacity" : "1073217536",
+         "avail" : "160285100"
+      },
+      "/dev/xvdm" : {
+         "use" : "93",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "987372716",
+         "capacity" : "1073217536",
+         "avail" : "85844820"
+      },
+      "/dev/xvdx" : {
+         "use" : "89",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "946507620",
+         "capacity" : "1073217536",
+         "avail" : "126709916"
+      },
+      "/dev/xvdg" : {
+         "use" : "84",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "891787144",
+         "capacity" : "1073217536",
+         "avail" : "181430392"
+      },
+      "/dev/xvdr" : {
+         "use" : "84",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "897144068",
+         "capacity" : "1073217536",
+         "avail" : "176073468"
+      },
+      "/dev/xvdy" : {
+         "use" : "87",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "928399324",
+         "capacity" : "1073217536",
+         "avail" : "144818212"
+      },
+      "/dev/xvdl" : {
+         "use" : "93",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "987421048",
+         "capacity" : "1073217536",
+         "avail" : "85796488"
+      },
+      "/dev/xvds" : {
+         "use" : "84",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "901112972",
+         "capacity" : "1073217536",
+         "avail" : "172104564"
+      },
+      "/dev/xvdv" : {
+         "use" : "86",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "914689208",
+         "capacity" : "1073217536",
+         "avail" : "158528328"
+      },
+      "/dev/xvdk" : {
+         "use" : "93",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "997457000",
+         "capacity" : "1073217536",
+         "avail" : "75760536"
+      },
+      "/dev/xvdu" : {
+         "use" : "84",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "898943652",
+         "capacity" : "1073217536",
+         "avail" : "174273884"
+      },
+      "/dev/xvdn" : {
+         "use" : "93",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "987377060",
+         "capacity" : "1073217536",
+         "avail" : "85840476"
+      },
+      "/dev/xvdj" : {
+         "use" : "32",
+         "volume" : "ghome",
+         "status" : 1,
+         "used" : "334920688",
+         "capacity" : "1073217536",
+         "avail" : "738296848"
+      },
+      "/dev/xvdq" : {
+         "use" : "82",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "873627900",
+         "capacity" : "1073217536",
+         "avail" : "199589636"
+      },
+      "/dev/xvdt" : {
+         "use" : "93",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "987370576",
+         "capacity" : "1073217536",
+         "avail" : "85846960"
+      }
+   },
+   "gluster02-master" : {
+      "/dev/xvdo" : {
+         "use" : "93",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "993998016",
+         "capacity" : "1073217536",
+         "avail" : "79219520"
+      },
+      "/dev/xvdh" : {
+         "use" : "87",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "932561928",
+         "capacity" : "1073217536",
+         "avail" : "140655608"
+      },
+      "/dev/mnt" : {
+         "volume" : "gvtmp",
+         "status" : 1
+      },
+      "/dev/xvdp" : {
+         "use" : "85",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "911440016",
+         "capacity" : "1073217536",
+         "avail" : "161777520"
+      },
+      "/dev/xvdw" : {
+         "use" : "86",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "913288188",
+         "capacity" : "1073217536",
+         "avail" : "159929348"
+      },
+      "/dev/xvdi" : {
+         "use" : "86",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "917463316",
+         "capacity" : "1073217536",
+         "avail" : "155754220"
+      },
+      "/dev/xvdf" : {
+         "use" : "87",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "932496916",
+         "capacity" : "1073217536",
+         "avail" : "140720620"
+      },
+      "/dev/xvdm" : {
+         "use" : "85",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "911255332",
+         "capacity" : "1073217536",
+         "avail" : "161962204"
+      },
+      "/dev/xvdx" : {
+         "use" : "93",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "987376024",
+         "capacity" : "1073217536",
+         "avail" : "85841512"
+      },
+      "/dev/xvdg" : {
+         "use" : "87",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "932284108",
+         "capacity" : "1073217536",
+         "avail" : "140933428"
+      },
+      "/dev/xvdr" : {
+         "use" : "83",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "884931512",
+         "capacity" : "1073217536",
+         "avail" : "188286024"
+      },
+      "/dev/xvdy" : {
+         "use" : "87",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "928672380",
+         "capacity" : "1073217536",
+         "avail" : "144545156"
+      },
+      "/dev/xvdl" : {
+         "use" : "94",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "998116388",
+         "capacity" : "1073217536",
+         "avail" : "75101148"
+      },
+      "/dev/xvds" : {
+         "use" : "93",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "987372904",
+         "capacity" : "1073217536",
+         "avail" : "85844632"
+      },
+      "/dev/xvdv" : {
+         "use" : "86",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "913910288",
+         "capacity" : "1073217536",
+         "avail" : "159307248"
+      },
+      "/dev/xvdk" : {
+         "use" : "94",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "998096104",
+         "capacity" : "1073217536",
+         "avail" : "75121432"
+      },
+      "/dev/xvdu" : {
+         "use" : "85",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "906001316",
+         "capacity" : "1073217536",
+         "avail" : "167216220"
+      },
+      "/dev/xvdn" : {
+         "use" : "84",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "892461828",
+         "capacity" : "1073217536",
+         "avail" : "180755708"
+      },
+      "/dev/xvdj" : {
+         "use" : "93",
+         "volume" : "gv0",
+         "status" : 1,
+         "used" : "987381516",
+         "capacity" : "1073217536",
+         "avail" : "85836020"
+      },
+      "/dev/xvdq" : {
+         "use" : "85",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "911506988",
+         "capacity" : "1073217536",
+         "avail" : "161710548"
+      },
+      "/dev/xvdt" : {
+         "use" : "88",
+         "volume" : "gv2",
+         "status" : 1,
+         "used" : "936697040",
+         "capacity" : "1073217536",
+         "avail" : "136520496"
+      }
+   }
+}
