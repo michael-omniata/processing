@@ -63,6 +63,9 @@ class BrickHarness extends Harness {
         NodeHarness nodeHarness;
         if ( (nodeHarness = findNodeHarness( input )) != null) {
           nodeHarness.attach( this );
+          usageSlider.setCaptionLabel("");
+          cli.setCaptionLabel("Node");
+          cli.setText((cli.getText()).substring(4));
         }
       }
     } 
