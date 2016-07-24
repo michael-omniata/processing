@@ -17,15 +17,16 @@ class Node {
     deviceNames.add("/dev/xvag");
     bricks = new ArrayList<Brick>();
   }
-  void mount( Brick brick ) {
+  boolean mount( Brick brick ) {
     String deviceName = deviceNames.remove(deviceNames.size()-1);
     if ( deviceName == null ) {
       println( "Can't add brick; no devices available" );
-      return;
+      return false;
     }
     brick.setDeviceName( deviceName );
     bricks.add( brick );
     println( "mounting "+deviceName );
+    return true;
   }
   String getNodeName() {
     println( "I am "+nodeName );

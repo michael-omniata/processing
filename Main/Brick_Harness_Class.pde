@@ -6,6 +6,7 @@ class BrickHarness extends Harness {
   Slider usageSlider;
   Toggle statusToggle;
   Textfield cli;
+  Textfield device;
   Node container;
 
   BrickHarness( int x, int y, int l, int h ) {
@@ -14,6 +15,7 @@ class BrickHarness extends Harness {
     usageSlider = cp5.addSlider(this, "sliderUsageValue")
       .setRange(0, 100)
       .setValue(0)
+      .setCaptionLabel("")
       ;
     statusToggle = cp5.addToggle(this, "statusToggle")
       .setSize(50, 20)
@@ -22,10 +24,16 @@ class BrickHarness extends Harness {
     cli = cp5.addTextfield(this, "cli")
       .setAutoClear(false)
       .setSize(50, 20)
+      .setCaptionLabel("Node")
+      ;
+    device = cp5.addTextfield(this, "")
+      .setSize(100, 20)
+      .lock()
       ;
     addController( usageSlider, 0, -15 );
     addController( statusToggle, 0, -50 );
     addController( cli, len/2, -50 );
+    addController( device, 0, -70 );
   }
   void setContainer( Node _node ) {
     container = _node;
@@ -63,9 +71,7 @@ class BrickHarness extends Harness {
         NodeHarness nodeHarness;
         if ( (nodeHarness = findNodeHarness( input )) != null) {
           nodeHarness.attach( this );
-          usageSlider.setCaptionLabel("");
-          cli.setCaptionLabel("Node");
-          cli.setText((cli.getText()).substring(4));
+          device.setValue( brick.getDeviceName() );
         }
       }
     } 

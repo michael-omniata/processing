@@ -15,6 +15,7 @@ class Brick {
     // this might be used to periodically get the *actual* status of the brick
   }
   void setDeviceName( String _deviceName ) {
+    println( "Brick setting device name to "+_deviceName );
     deviceName = _deviceName;
   }
   String getDeviceName() {

@@ -46,8 +46,10 @@ class NodeHarness extends Harness {
      */
   }
   void attach( BrickHarness brickHarness ) {
-    brickHarnesses.add( brickHarness );
-    brickHarness.setContainer( node );
+    if ( node.mount( brickHarness.brick ) ) {
+      brickHarnesses.add( brickHarness );
+      brickHarness.setContainer( node );
+    }
   }
 }
 
