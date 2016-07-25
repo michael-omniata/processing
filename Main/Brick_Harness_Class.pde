@@ -1,6 +1,6 @@
 //The BrickHarness class is the GUI for a Brick, attributes can be adjusted through ControlP5 for testing
 
-class BrickHarness extends Harness {
+class BrickHarness extends HarnessRect {
   int sliderUsageValue;
   Brick brick;
   Slider usageSlider;
@@ -32,7 +32,7 @@ class BrickHarness extends Harness {
       ;
     addController( usageSlider, 0, -15 );
     addController( statusToggle, 0, -50 );
-    addController( cli, len/2, -50 );
+    addController( cli, wth/2, -50 );
     addController( device, 0, -70 );
   }
   void setContainer( Node _node ) {

@@ -14,6 +14,9 @@ void setup() {
   size(800, 800);
   cp5 = new ControlP5(this);
 
+  ellipseMode(CORNER);
+  rectMode(CORNER);
+  
   node001 = new NodeHarness("node001", 50, 200, 100, 50 );
   nodeHarnesses.add( node001 );
   brickFactory = new BrickFactory( 25, 50, 50, 50 );

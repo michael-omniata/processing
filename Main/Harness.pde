@@ -2,18 +2,15 @@
 
 class Harness {
   float xPos, yPos;
-  int len, hgt;
-  boolean overBox = false;
+  boolean overImg = false;
   boolean locked = false;
   float xOffset = 0.0; 
   float yOffset = 0.0;
   ArrayList<HarnessController>harnessControllers;
 
-  Harness( int x, int y, int l, int h ) {
+  Harness( int x, int y ) {
     xPos = x;
     yPos = y;
-    len = l;
-    hgt = h;
     harnessControllers = new ArrayList<HarnessController>();
   }
   void addController( Controller c, int _xOffset, int _yOffset ) {
@@ -21,18 +18,19 @@ class Harness {
     hc.setPosition( xPos, yPos );
     harnessControllers.add( hc );
   }
-  void draw() {
-    rect(xPos, yPos, len, hgt);
+  boolean mouseHovering() {
+    // override this in subclasses
+    return false;
   }
   void update() {
-    if ( mouseHovering() ) {
-      overBox = true;  
+    if ( this.mouseHovering() ) {
+      overImg = true;  
       if (!locked) { 
         stroke(255);
       }
     } else {
       stroke(153);
-      overBox = false;
+      overImg = false;
     }
     if (locked) {
       // If we're here, the harness is selected.
@@ -40,7 +38,7 @@ class Harness {
       setPosition( mouseX-xOffset, mouseY-yOffset );
     }
     if ( mousePressed ) {
-      if (overBox) { 
+      if (overImg) { 
         locked = true;
       } else {
         locked = false;
@@ -51,27 +49,11 @@ class Harness {
       locked = false;
     }
   }
-  boolean mouseHovering() {
-    return (
-      ((mouseX >= xPos) && (mouseX <= xPos+len)) &&
-      ((mouseY >= yPos) && (mouseY <= yPos+hgt)) );
-    /*  return (
-     (mouseX > (xPos-len/2)) && (mouseX < (xPos+len/2)) &&
-     (mouseY > (yPos-hgt/2)) && (mouseY < (yPos+hgt/2))
-     );
-     */
-  }
   void setColor( color c ) {
     fill( c );
   }
   void setStroke( int x) {
     stroke( x );
-  }
-  float getX() { 
-    return xPos;
-  }
-  float getY() { 
-    return yPos;
   }
   void setPosition( float _x, float _y ) {
     xPos = _x;
@@ -79,18 +61,5 @@ class Harness {
     for (HarnessController hc : harnessControllers ) {
       hc.setPosition( xPos, yPos );
     }
-  }
-
-  void setX(float newX) { 
-    xPos = newX;
-  }
-  void setY(float newY) { 
-    yPos = newY;
-  }
-  void setLength(int newLen) {
-    len = newLen;
-  }
-  void setHeight(int newHgt) {
-    hgt = newHgt;
   }
 }

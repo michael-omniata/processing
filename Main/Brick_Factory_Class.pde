@@ -1,6 +1,6 @@
 //The BrickFactory class is used to create Brick objects
 
-class BrickFactory extends Harness {
+class BrickFactory extends HarnessRect {
   Bang button;
   processing.core.PApplet canvas;
   ArrayList<BrickHarness> brickHarnesses = new ArrayList<BrickHarness>();
