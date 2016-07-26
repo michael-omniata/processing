@@ -2,12 +2,11 @@
 
 class Volume {
   String name;
-  int xPos, yPos;
+  boolean status;
   float usage, capacity;
   ArrayList<Brick> bricks;
 
-  Volume(ArrayList<Brick> brickArray) {
-    bricks = brickArray;
+  Volume() {
     usage = 0;
     capacity = 0;
     capacity = this.getCapacity();
