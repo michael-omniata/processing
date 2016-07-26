@@ -6,9 +6,9 @@ class Volume {
   float usage, capacity;
   ArrayList<Brick> bricks;
 
-  Volume() {
-    usage = 0;
-    capacity = 0;
+  Volume( String _name ) {
+    name = _name;
+    bricks = new ArrayList<Brick>();
     capacity = this.getCapacity();
   }
 
@@ -19,20 +19,30 @@ class Volume {
   String getName() {
     return name;
   }
+  void addBrick( Brick _brick ) {
+    bricks.add( _brick );
+  }
 
   float getCapacity() { //This sets every time a change is made to capacity
+    capacity = 0;
+    println( "checking "+bricks.size()+" bricks" );
     for (int i = 0; i < bricks.size(); i++) {
       Brick temp = bricks.get(i);
+      println( "brick "+i+" capacity is "+temp.getCapacity() );
       capacity += temp.getCapacity();
-    } 
+    }
+    println( "Volume capacity is "+capacity );
     return capacity;
   }
 
   float getUsage() {
+    usage = 0;
+    if ( capacity == 0 ) return 0;
     for (int i = 0; i < bricks.size(); i++) {
       Brick temp = bricks.get(i);
       usage += temp.getUsage();
-    } 
-    return (usage/capacity);
+    }
+    usage /= bricks.size();
+    return (100*(usage/100*capacity)/capacity);
   }
 }

@@ -1,12 +1,19 @@
 class VolumeHarness extends HarnessEllipse {
   int xPos, yPos;
   Slider usageIndicator;
+  Textfield volumeName;
   Toggle started;
   Volume volume;
 
-  VolumeHarness(int x, int y, int wide, int high) {
+  VolumeHarness( String _name, int x, int y, int wide, int high) {
     super(x, y, wide, high);
+    volume = new Volume( _name );
 
+    volumeName = cp5.addTextfield(this, "" )
+      .setSize(100, 20)
+      .setValue( _name )
+      .lock()
+      ;
     usageIndicator = cp5.addSlider(this, "usage")
       .setRange(0.0, 100.0)
       .setValue(0)
@@ -16,18 +23,20 @@ class VolumeHarness extends HarnessEllipse {
       .setSize(50, 20)
       .setCaptionLabel("State")
       ;
+
+    addController(volumeName, 50, -50);
     addController(usageIndicator, 0, -20);
     addController(started, 0, -50);
   }
 
-  boolean installVolume(Volume newVolume) {
+  boolean install(Volume newVolume) {
     if ( volume != null) return false;
     volume = newVolume;
     usageIndicator.setValue(volume.getUsage());
     return true;
   }
 
-  Volume removeVolume() {
+  Volume remove() {
     if (volume == null) return null;
     Volume removedVolume = volume;
     volume = null;
@@ -40,6 +49,7 @@ class VolumeHarness extends HarnessEllipse {
 
   void update() {
     super.update();
+   
     if ( volume != null) {
       float usage = (float)volume.getUsage() / 100;
       if (usage < .5) {
@@ -50,4 +60,20 @@ class VolumeHarness extends HarnessEllipse {
     }
     super.draw();
   }
+  void attach( BrickHarness _brickHarness ) {
+    volume.addBrick( _brickHarness.brick );
+    _brickHarness.setVolumeContainer( volume );
+    volume.getCapacity();
+  }
+}
+
+VolumeHarness findVolumeHarness( String volumeName ) {
+  println( "Looking for "+volumeName );
+  for (VolumeHarness harness : volumeHarnesses) {
+    if ( harness.getVolume().getName().equals(volumeName) ) {
+      println( "Found "+volumeName );
+      return harness;
+    }
+  }
+  return null;
 }
