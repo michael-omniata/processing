@@ -3,8 +3,7 @@
 class BrickFactory extends HarnessRect {
   Bang button;
   processing.core.PApplet canvas;
-  ArrayList<BrickHarness> brickHarnesses = new ArrayList<BrickHarness>();
-
+ 
   BrickFactory( int x, int y, int l, int h) {
     super( x, y, l, h );
     button = cp5.addBang(this, "createHarness")
@@ -21,9 +20,7 @@ class BrickFactory extends HarnessRect {
   }
   void update() {
     super.update();
-    for (BrickHarness harness : brickHarnesses) {
-      harness.update();
-    }
+
     /*if ( mousePressed && button.isMouseOver()) { <- Currently this makes the button jump around whenever clicked and is a hassle to deal with. Moved button to a reasonable spot and commented out this code
       button.setPosition(xPos, yPos);
     }*/

@@ -10,7 +10,7 @@ class VolumeHarness extends HarnessEllipse {
     volume = new Volume( _name );
 
     volumeName = cp5.addTextfield(this, "" )
-      .setSize(100, 20)
+      .setSize(50, 20)
       .setValue( _name )
       .lock()
       ;

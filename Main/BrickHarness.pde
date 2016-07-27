@@ -43,14 +43,20 @@ class BrickHarness extends HarnessRect {
     addController( device, 0, -70 );
     addController( volumeCli, wth/2, -70 );
   }
+  void setDevice( String _device ) {
+    device.setValue( _device );
+    brick.setDeviceName( _device );
+  }
   void setNodeContainer( Node _node ) {
     nodeContainer = _node;
+    nodeCli.setText( _node.getName() );
     statusToggle( true );
     statusToggle.setValue(true);
-    println( "Attached by "+nodeContainer.getNodeName() );
+    println( "Attached by "+nodeContainer.getName() );
   }
   void setVolumeContainer( Volume _volume ) {
     volumeContainer = _volume;
+    volumeCli.setText( _volume.getName() );
   }
   Node getNodeContainer() {
     return nodeContainer;
@@ -84,7 +90,7 @@ class BrickHarness extends HarnessRect {
         println( "input is "+input );
         NodeHarness nodeHarness;
         if ( (nodeHarness = findNodeHarness( input )) != null) {
-          nodeHarness.attach( this );
+          nodeHarness.attach( this, "/dev/????" );
           device.setValue( brick.getDeviceName() );
         }
       }

@@ -52,8 +52,8 @@ class NodeHarness extends HarnessRect {
      endShape();
      */
   }
-  void attach( BrickHarness brickHarness ) {
-    if ( node.mount( brickHarness.brick ) ) {
+  void attach( BrickHarness brickHarness, String deviceName ) {
+    if ( node.mount( brickHarness.brick, deviceName ) ) {
       brickHarnesses.add( brickHarness );
       brickHarness.setNodeContainer( node );
     }
@@ -63,7 +63,7 @@ class NodeHarness extends HarnessRect {
 NodeHarness findNodeHarness( String nodeName ) {
   println( "Looking for "+nodeName );
   for (NodeHarness harness : nodeHarnesses) {
-    if ( harness.getNode().getNodeName().equals(nodeName) ) {
+    if ( harness.getNode().getName().equals(nodeName) ) {
       println( "Found "+nodeName );
       return harness;
     }
