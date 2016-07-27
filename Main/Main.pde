@@ -132,8 +132,9 @@ void draw() {
       float yPosNew = ( BRICKS_YPOS + COLUMN_HEIGHT + NODE_SPACER + (COLUMN_HEIGHT * row) + (ROW_DIVIDER * row) );
       brickHarness.setPosition( xPosNew, yPosNew );
       brickHarness.showControllers();
-      brickHarness.draw();
       brickHarness.update();
+      brickHarness.draw();
+      
       brickCount++;
     } else {
       brickHarness.hideControllers();
