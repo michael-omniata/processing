@@ -26,7 +26,6 @@ void setup() {
   
   brickFactory = new BrickFactory( 25, 50, 50, 50 );
   brickFactory.setColor( color( 0, 0, 255 ) );
-  frameRate(30);
 }
 
 void draw() {

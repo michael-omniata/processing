@@ -49,7 +49,7 @@ class VolumeHarness extends HarnessEllipse {
 
   void update() {
     super.update();
-   
+    usageIndicator.setValue(volume.getUsage() );
     if ( volume != null) {
       float usage = (float)volume.getUsage() / 100;
       if (usage < .5) {
