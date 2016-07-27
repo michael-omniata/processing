@@ -2,7 +2,7 @@ class VolumeHarness extends HarnessEllipse {
   int xPos, yPos;
   Slider usageIndicator;
   Textfield volumeName;
-  Toggle started;
+  public Toggle filter;
   Volume volume;
 
   VolumeHarness( String _name, int x, int y, int wide, int high) {
@@ -19,14 +19,14 @@ class VolumeHarness extends HarnessEllipse {
       .setValue(0)
       .setCaptionLabel("")
       ;
-    started = cp5.addToggle(this, "started")
+    filter = cp5.addToggle(this, "filter")
       .setSize(50, 20)
-      .setCaptionLabel("State")
+      .setCaptionLabel("Filter")
       ;
 
     addController(volumeName, 50, -50);
     addController(usageIndicator, 0, -20);
-    addController(started, 0, -50);
+    addController(filter, 0, -50);
   }
 
   boolean install(Volume newVolume) {
@@ -62,7 +62,7 @@ class VolumeHarness extends HarnessEllipse {
   }
   void attach( BrickHarness _brickHarness ) {
     volume.addBrick( _brickHarness.brick );
-    _brickHarness.setVolumeContainer( volume );
+    _brickHarness.setVolumeContainer( this );
     volume.getCapacity();
   }
 }

@@ -22,6 +22,16 @@ class Harness {
     // override this in subclasses
     return false;
   }
+  void hideControllers() {
+    for ( HarnessController hc : harnessControllers ) {
+      hc.c.hide();
+    }
+  }
+  void showControllers() {
+    for ( HarnessController hc : harnessControllers ) {
+      hc.c.show();
+    }
+  }  
   void update() {
     if ( this.mouseHovering() ) {
       overImg = true;  

@@ -3,6 +3,15 @@
 import controlP5.*;
 ControlP5 cp5;
 
+int BRICK_COLUMNS = 9;
+int COLUMN_WIDTH = 100;
+int COLUMN_HEIGHT = 120;
+int COLUMN_DIVIDER = 5;
+int ROW_DIVIDER = 10;
+int NODE_SPACER = 30;
+int BRICKS_XPOS = 20;
+int BRICKS_YPOS = 250;
+
 
 ArrayList<NodeHarness> nodeHarnesses = new ArrayList<NodeHarness>();
 ArrayList<VolumeHarness> volumeHarnesses = new ArrayList<VolumeHarness>();
@@ -23,8 +32,7 @@ void initializeFromConfig( String filename ) {
 
   JSONArray nodes = cf.getJSONArray("nodes");
 
-//for (int i = 0; i < nodes.size(); i++) { 
-  for (int i = 0; i < 1; i++) { 
+  for (int i = 0; i < nodes.size(); i++) { 
     JSONObject node = nodes.getJSONObject(i); 
 
     String nodeName = node.getString("name");
@@ -33,16 +41,47 @@ void initializeFromConfig( String filename ) {
 
     JSONArray bricks = node.getJSONArray("bricks");
     for ( int j = 0; j < bricks.size(); j++ ) {
-      JSONObject brick = bricks.getJSONObject(i);
+      JSONObject brick = bricks.getJSONObject(j);
       String volumeName = brick.getString("volume");
-      String deviceName = brick.getString("device");
-      int capacity = brick.getInt("capacity");
-      int use = brick.getInt("use");
-      int status = brick.getInt("status");
+
+      String deviceName;
+      try {
+        deviceName = brick.getString("device");
+      } 
+      catch (Exception e) {
+        deviceName = "????";
+      }
+
+      int capacity;
+      try {
+        capacity = brick.getInt("capacity");
+      } 
+      catch (Exception e) {
+        capacity = 0;
+      }
+
+      int use;
+      try {
+        use = brick.getInt("use");
+      } 
+      catch (Exception e) {
+        use = 0;
+      }
+
+      int status;
+      try {
+        status = brick.getInt("status");
+      } 
+      catch (Exception e) {
+        status = 0;
+      }
+
+      println( "node="+nodeName+" dev="+deviceName+" volume="+volumeName );
 
       BrickHarness brickHarness = new BrickHarness( 250, 250, 100, 50 );
       brickHarness.install( new Brick( capacity, use, status == 1 ) );
       brickHarnesses.add( brickHarness );
+      brickHarness.hideControllers();
 
       nodeHarness.attach( brickHarness, deviceName );
       brickHarness.setDevice( deviceName );
@@ -68,10 +107,13 @@ void setup() {
 
   brickFactory = new BrickFactory( 0, 0, 50, 50 );
   brickFactory.setColor( color( 0, 0, 255 ) );
+
+  frameRate(20);
 }
 
 void draw() {
   background(175);
+  brickFactory.draw();
   brickFactory.update();
   for ( NodeHarness nodeHarness : nodeHarnesses ) {
     nodeHarness.update();
@@ -79,7 +121,22 @@ void draw() {
   for ( VolumeHarness volumeHarness : volumeHarnesses ) {
     volumeHarness.update();
   }
+  int brickCount = 0;
   for ( BrickHarness brickHarness : brickHarnesses ) {
-    brickHarness.update();
+    if ( brickHarness.volumeHarnessContainer.filter.getBooleanValue() &&
+         brickHarness.nodeHarnessContainer.filter.getBooleanValue() ) {
+      int row = brickCount / BRICK_COLUMNS;
+      int col = brickCount % BRICK_COLUMNS;
+
+      float xPosNew = ( BRICKS_XPOS + (COLUMN_WIDTH * col) + (COLUMN_DIVIDER * col) );
+      float yPosNew = ( BRICKS_YPOS + COLUMN_HEIGHT + NODE_SPACER + (COLUMN_HEIGHT * row) + (ROW_DIVIDER * row) );
+      brickHarness.setPosition( xPosNew, yPosNew );
+      brickHarness.showControllers();
+      brickHarness.draw();
+      brickHarness.update();
+      brickCount++;
+    } else {
+      brickHarness.hideControllers();
+    }
   }
 }

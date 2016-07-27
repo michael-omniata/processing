@@ -8,13 +8,13 @@ class BrickHarness extends HarnessRect {
   Textfield nodeCli;
   Textfield device;
   Textfield volumeCli;
-  Node nodeContainer;
-  Volume volumeContainer;
+  public NodeHarness nodeHarnessContainer;
+  public VolumeHarness volumeHarnessContainer;
 
   BrickHarness( int x, int y, int l, int h ) {
     super( x, y, l, h );
-    nodeContainer = null;
-    volumeContainer = null;
+    nodeHarnessContainer = null;
+    volumeHarnessContainer = null;
     usageSlider = cp5.addSlider(this, "sliderUsageValue")
       .setRange(0, 100)
       .setValue(0)
@@ -47,22 +47,16 @@ class BrickHarness extends HarnessRect {
     device.setValue( _device );
     brick.setDeviceName( _device );
   }
-  void setNodeContainer( Node _node ) {
-    nodeContainer = _node;
-    nodeCli.setText( _node.getName() );
+  void setNodeContainer( NodeHarness _nodeHarness ) {
+    nodeHarnessContainer = _nodeHarness;
+    nodeCli.setText( _nodeHarness.node.getName() );
     statusToggle( true );
     statusToggle.setValue(true);
-    println( "Attached by "+nodeContainer.getName() );
+    println( "Attached by "+nodeHarnessContainer.node.getName() );
   }
-  void setVolumeContainer( Volume _volume ) {
-    volumeContainer = _volume;
-    volumeCli.setText( _volume.getName() );
-  }
-  Node getNodeContainer() {
-    return nodeContainer;
-  }
-  Volume getVolumeContainer() {
-    return volumeContainer;
+  void setVolumeContainer( VolumeHarness _volumeHarness ) {
+    volumeHarnessContainer = _volumeHarness;
+    volumeCli.setText( _volumeHarness.volume.getName() );
   }
   boolean install( Brick newBrick ) {
     if ( brick != null ) return false; // Harness already has a brick
@@ -84,7 +78,7 @@ class BrickHarness extends HarnessRect {
   }
   void update() {
     super.update();
-    if ( nodeContainer == null ) {
+    if ( nodeHarnessContainer == null ) {
       String input = nodeCli.getText();
       if ( !input.equals("") ) {
         println( "input is "+input );
@@ -95,7 +89,7 @@ class BrickHarness extends HarnessRect {
         }
       }
     } 
-    if ( volumeContainer == null ) {
+    if ( volumeHarnessContainer == null ) {
       String input = volumeCli.getText();
       if ( !input.equals("") ) {
         println( "input is "+input );
@@ -118,7 +112,6 @@ class BrickHarness extends HarnessRect {
       } else {
         super.setColor(color(0));
       }
-      super.draw();
     }
   }
   void statusToggle(boolean state) {

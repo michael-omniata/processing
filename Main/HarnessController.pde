@@ -1,5 +1,5 @@
 class HarnessController {
-  Controller c;
+  public Controller c;
   float xOffset, yOffset;
   HarnessController( Controller _c, float _xOffset, float _yOffset ) {
     c = _c;
