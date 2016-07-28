@@ -22,12 +22,12 @@ class BrickHarness extends HarnessRect {
       ;
     statusToggle = cp5.addToggle(this, "statusToggle")
       .setSize(50, 20)
-      .setCaptionLabel("State")
+      .setCaptionLabel("")
       ;
     nodeCli = cp5.addTextfield(this, "cli")
       .setAutoClear(false)
       .setSize(50, 20)
-      .setCaptionLabel("Node")
+      .setCaptionLabel("")
       ;
     device = cp5.addTextfield(this, "device")
       .setSize(50, 20)
@@ -37,11 +37,11 @@ class BrickHarness extends HarnessRect {
       .setSize(50, 20)
       .setCaptionLabel("")
       ;
-    addController( usageSlider, 0, -15 );
-    addController( statusToggle, 0, -50 );
-    addController( nodeCli, wth/2, -50 );
-    addController( device, 0, -70 );
-    addController( volumeCli, wth/2, -70 );
+    addController( usageSlider, 0, -10 );
+    addController( statusToggle, 0, -30 );
+    addController( nodeCli, wth/2, -30 );
+    addController( device, 0, -50 );
+    addController( volumeCli, wth/2, -50 );
   }
   void setDevice( String _device ) {
     device.setValue( _device );

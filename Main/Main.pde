@@ -5,12 +5,12 @@ ControlP5 cp5;
 
 int BRICK_COLUMNS = 9;
 int COLUMN_WIDTH = 100;
-int COLUMN_HEIGHT = 120;
+int COLUMN_HEIGHT = 75;
 int COLUMN_DIVIDER = 5;
 int ROW_DIVIDER = 10;
 int NODE_SPACER = 30;
 int BRICKS_XPOS = 20;
-int BRICKS_YPOS = 160;
+int BRICKS_YPOS = 80;
 
 
 ArrayList<NodeHarness> nodeHarnesses = new ArrayList<NodeHarness>();
@@ -36,7 +36,7 @@ void initializeFromConfig( String filename ) {
     JSONObject node = nodes.getJSONObject(i); 
 
     String nodeName = node.getString("name");
-    NodeHarness nodeHarness = new NodeHarness(nodeName, 20+(120*i), 140, 100, 50 );
+    NodeHarness nodeHarness = new NodeHarness(nodeName, 500+(120*i), 50, 100, 50 );
     nodeHarnesses.add( nodeHarness );
 
     JSONArray bricks = node.getJSONArray("bricks");
@@ -78,7 +78,7 @@ void initializeFromConfig( String filename ) {
 
       println( "node="+nodeName+" dev="+deviceName+" volume="+volumeName );
 
-      BrickHarness brickHarness = new BrickHarness( 250, 250, 100, 50 );
+      BrickHarness brickHarness = new BrickHarness( 250, 250, 100, 25 );
       brickHarness.install( new Brick( capacity, use, status == 1 ) );
       brickHarnesses.add( brickHarness );
       brickHarness.hideControllers();
