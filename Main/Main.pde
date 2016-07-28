@@ -10,7 +10,7 @@ int COLUMN_DIVIDER = 5;
 int ROW_DIVIDER = 10;
 int NODE_SPACER = 30;
 int BRICKS_XPOS = 20;
-int BRICKS_YPOS = 250;
+int BRICKS_YPOS = 160;
 
 
 ArrayList<NodeHarness> nodeHarnesses = new ArrayList<NodeHarness>();
@@ -26,7 +26,7 @@ void initializeFromConfig( String filename ) {
   for ( int i = 0; i < volumes.size(); i++ ) {
     JSONObject volume = volumes.getJSONObject(i);
     String volumeName = volume.getString("name");
-    VolumeHarness volumeHarness = new VolumeHarness(volumeName, 20+(120*i), 150, 100, 50 );
+    VolumeHarness volumeHarness = new VolumeHarness(volumeName, 20+(120*i), 50, 100, 50 );
     volumeHarnesses.add( volumeHarness );
   }
 
@@ -36,7 +36,7 @@ void initializeFromConfig( String filename ) {
     JSONObject node = nodes.getJSONObject(i); 
 
     String nodeName = node.getString("name");
-    NodeHarness nodeHarness = new NodeHarness(nodeName, 20+(120*i), 250, 100, 50 );
+    NodeHarness nodeHarness = new NodeHarness(nodeName, 20+(120*i), 140, 100, 50 );
     nodeHarnesses.add( nodeHarness );
 
     JSONArray bricks = node.getJSONArray("bricks");
@@ -105,16 +105,11 @@ void setup() {
 
   initializeFromConfig( "data/gluster-info.json" );
 
-  brickFactory = new BrickFactory( 0, 0, 50, 50 );
-  brickFactory.setColor( color( 0, 0, 255 ) );
-
   frameRate(20);
 }
 
 void draw() {
   background(175);
-  brickFactory.draw();
-  brickFactory.update();
   for ( NodeHarness nodeHarness : nodeHarnesses ) {
     nodeHarness.update();
   }
