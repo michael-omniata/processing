@@ -4,7 +4,7 @@ class NodeHarness extends HarnessRect {
   Node node;
   int slots;
   Textfield nodeName;
-  Toggle filter;
+  public Toggle filter;
   ArrayList<BrickHarness> brickHarnesses;
   NodeHarness( String name, int x, int y, int w, int h ) {
     super( x, y, w, h );

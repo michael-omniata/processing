@@ -15,7 +15,7 @@ class BrickFactory extends HarnessRect {
   }
   void createHarness() {
     BrickHarness brickHarness = new BrickHarness( 250, 250, 100, 50 );
-    brickHarness.install( new Brick( 200, 0, false ) );
+    brickHarness.install( new Brick( 200 ) );
     brickHarnesses.add( brickHarness );
   }
   void update() {

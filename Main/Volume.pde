@@ -40,7 +40,7 @@ class Volume {
     if ( capacity == 0 ) return 0;
     for (int i = 0; i < bricks.size(); i++) {
       Brick temp = bricks.get(i);
-      usage += temp.getUsage();
+      usage += temp.getUse();
     }
     usage /= bricks.size();
     return (100*(usage/100*capacity)/capacity);
