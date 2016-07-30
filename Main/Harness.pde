@@ -6,6 +6,8 @@ class Harness {
   boolean locked = false;
   float xOffset = 0.0; 
   float yOffset = 0.0;
+  int stroke;
+  int stroke_weight;
   ArrayList<HarnessController>harnessControllers;
 
   Harness( int x, int y ) {
@@ -36,10 +38,10 @@ class Harness {
     if ( this.mouseHovering() ) {
       overImg = true;  
       if (!locked) { 
-        stroke(255);
+  //      stroke(255);
       }
     } else {
-      stroke(153);
+  //    stroke(153);
       overImg = false;
     }
     if (locked) {
@@ -62,8 +64,11 @@ class Harness {
   void setColor( color c ) {
     fill( c );
   }
-  void setStroke( int x) {
-    stroke( x );
+  void setStroke( int x ) {
+    stroke = x;
+  }
+  void setStrokeWeight( int x) {
+    stroke_weight = x;
   }
   void setPosition( float _x, float _y ) {
     xPos = _x;

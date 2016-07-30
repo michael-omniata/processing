@@ -7,7 +7,11 @@ class HarnessRect extends Harness {
     hgt = h;
   }
   void draw() {
+    pushStyle();
+    strokeWeight( stroke_weight );
+    stroke( stroke );
     rect(xPos, yPos, wth, hgt);
+    popStyle();
   }
   @Override public boolean mouseHovering() {
     return (
