@@ -113,10 +113,10 @@ class BrickHarness extends HarnessRect {
         super.setColor(color(0));
       }
       int stroke_weight = 0;
-      if ( brick.delta_read > 0 ) {
+      if ( brick.reads > 0 ) {
         stroke_weight += 2;
       }
-      if ( brick.delta_write > 0 ) {
+      if ( brick.writes > 0 ) {
         stroke_weight += 3;
       }
       if ( stroke_weight > 0 ) {

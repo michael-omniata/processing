@@ -3,6 +3,9 @@
 import controlP5.*;
 ControlP5 cp5;
 
+import websockets.*;
+WebsocketClient wsc;
+
 int mode = 2; // 2=2D, 3=3D
 
 int BRICK_COLUMNS = 9;
@@ -97,13 +100,13 @@ void initializeFromConfig( String source ) {
       brickHarness.hideControllers();
 
       brickHarness.brick.update(
-        status == 1,
-        capacity,
-        usage,
-        0,
-        0,
+        status == 1, 
+        capacity, 
+        usage, 
+        0, 
+        0, 
         0
-      );
+        );
 
       nodeHarness.attach( brickHarness, deviceName );
       brickHarness.setDevice( deviceName );
@@ -118,18 +121,20 @@ void initializeFromConfig( String source ) {
 
 
 void setup() {
-//  if ( mode == 2 ) {
-//    size(1024, 1024);
-//  } else {
-    size(1024,1024,P3D);
-//  }
+  //  if ( mode == 2 ) {
+  //    size(1024, 1024);
+  //  } else {
+  size(1024, 1024, P3D);
+  //  }
   cp5 = new ControlP5(this);
 
   initializeFromConfig( "http://ec2-54-158-33-191.compute-1.amazonaws.com:3001/gluster" );
   // initializeFromConfig( "data/gluster-info.json" );
 
-  updateBrickTimedEventGenerator = new TimedEventGenerator(this);
-  updateBrickTimedEventGenerator.setIntervalMs(30000);
+  wsc = new WebsocketClient(this, "ws://ec2-54-158-33-191.compute-1.amazonaws.com:3001/gluster/stats");
+
+ // updateBrickTimedEventGenerator = new TimedEventGenerator(this);
+ // updateBrickTimedEventGenerator.setIntervalMs(30000);
 
   if ( mode == 2 ) {
     background(0);
@@ -153,13 +158,13 @@ void updateBrickStates() {
     if ( brickHarness != null) {
       Brick brick = brickHarness.brick;
       brick.update(
-        brickInfo.getInt("status") == 1,
-        brickInfo.getFloat("capacity"),
-        brickInfo.getFloat("used"),
-        brickInfo.getInt("clients"),
-        brickInfo.getFloat("read"),
+        brickInfo.getInt("status") == 1, 
+        brickInfo.getFloat("capacity"), 
+        brickInfo.getFloat("used"), 
+        brickInfo.getInt("clients"), 
+        brickInfo.getFloat("read"), 
         brickInfo.getFloat("written")
-      );
+        );
     }
   }
   println("Bricks updates");
@@ -197,7 +202,7 @@ void drawLights() {
   spotX = width;
   spotY = 0;
   spotZ = 0;
-  spotLight(125,185,222, spotX, spotY, spotZ, -1, 0, 0, PI/2, 2);
+  spotLight(125, 185, 222, spotX, spotY, spotZ, -1, 0, 0, PI/2, 2);
 }
 
 color calculateBrickHue( BrickHarness bh ) {
@@ -215,10 +220,10 @@ color calculateBrickHue( BrickHarness bh ) {
 color calculateBrickBrightness( BrickHarness bh ) {
   int boffset = 20;
   if (bh.brick.getStatus() == true) {
-    if ( bh.brick.delta_read > 0 ) {
+    if ( bh.brick.reads > 0 ) {
       boffset += 20;
     }
-    if ( bh.brick.delta_write > 0 ) {
+    if ( bh.brick.writes > 0 ) {
       boffset += 50;
     }
   } 
@@ -227,54 +232,56 @@ color calculateBrickBrightness( BrickHarness bh ) {
 
 boolean calculateBrickVisibility( BrickHarness bh ) {
   return bh.nodeHarnessContainer.filter.getState() &&
-         bh.volumeHarnessContainer.filter.getState();
+    bh.volumeHarnessContainer.filter.getState();
 }
 
 void setup3D() {
   smooth();
   cp5.setAutoDraw(false);
 
-  colorMode(HSB, color(255,255,255), 100, 100, 100 );
+  //colorMode(HSB, color(255,255,255), 100, 100, 100 );
+  colorMode(HSB, 255, 100, 100, 100);
 
   ds = new DawesomeToolkit(this);
-  vectors = ds.fibonacciSphereLayout(brickHarnesses.size(),300);
+  vectors = ds.fibonacciSphereLayout(brickHarnesses.size(), 300);
 }
 
 void draw3D() {
 
   pushMatrix();
-    background(0);
-    //drawLights();
-    fill(255);
-    noStroke();
-    translate(width/2,height/2);
-    float xRot = radians(180 -  millis()*.00);
-    float yRot = radians(180 -  millis()*.01);
-    rotateX( xRot ); 
-    rotateY( yRot );
+  background(0);
+  //    drawLights();
+  lights();
+  fill(255);
+  noStroke();
+  translate(width/2, height/2);
+  float xRot = radians(180 -  millis()*.00);
+  float yRot = radians(180 -  millis()*.01);
+  rotateX( xRot ); 
+  rotateY( yRot );
 
-    int counter = 0;
-    for (PVector p : vectors) {
-      pushMatrix();
-        //float scaler = sin(frameCount/100.0)*1.5;
-        //p = PVector.mult(p,scaler);
-        translate(p.x, p.y, p.z);
-        PVector polar = ds.cartesianToPolar(p);
-        rotateY(polar.y);
-        rotateZ(polar.z);
-        BrickHarness bh = brickHarnesses.get(counter);
-        if ( calculateBrickVisibility( bh ) ) {
-          fill(
-            calculateBrickHue( bh ),
-            100,
-            calculateBrickBrightness( bh )
-          );
-          //box(boxSize,boxSize,boxSize);
-          sphere(boxSize);
-        }
-      popMatrix();
-      counter++;
+  int counter = 0;
+  for (PVector p : vectors) {
+    pushMatrix();
+    //float scaler = sin(frameCount/100.0)*1.5;
+    //p = PVector.mult(p,scaler);
+    translate(p.x, p.y, p.z);
+    PVector polar = ds.cartesianToPolar(p);
+    rotateY(polar.y);
+    rotateZ(polar.z);
+    BrickHarness bh = brickHarnesses.get(counter);
+    if ( calculateBrickVisibility( bh ) ) {
+      fill(
+        calculateBrickHue( bh ), 
+        100, 
+        calculateBrickBrightness( bh )
+        );
+      //box(boxSize,boxSize,boxSize);
+      sphere(boxSize);
     }
+    popMatrix();
+    counter++;
+  }
   popMatrix();
   gui();
 }
@@ -296,7 +303,7 @@ void draw2D() {
   int brickCount = 0;
   for ( BrickHarness brickHarness : brickHarnesses ) {
     if ( brickHarness.volumeHarnessContainer.filter.getBooleanValue() &&
-         brickHarness.nodeHarnessContainer.filter.getBooleanValue() ) {
+      brickHarness.nodeHarnessContainer.filter.getBooleanValue() ) {
       int row = brickCount / BRICK_COLUMNS;
       int col = brickCount % BRICK_COLUMNS;
 
@@ -306,10 +313,50 @@ void draw2D() {
       brickHarness.showControllers();
       brickHarness.update();
       brickHarness.draw();
-      
+
       brickCount++;
     } else {
       brickHarness.hideControllers();
+    }
+  }
+}
+
+void webSocketEvent(String msg) {
+  JSONObject json = parseJSONObject(msg);
+  if (json == null) {
+    println("JSONObject could not be parsed");
+  } else {
+    String type = json.getString("type");
+    if ( type.equals("cpustat") ) {
+      JSONObject cpustat = json.getJSONObject( "payload" );
+      NodeHarness nh = findNodeHarness( json.getString( "host" ) );
+      if ( nh != null ) {
+        nh.node.idle = cpustat.getFloat( "idle" );
+        nh.node.system = cpustat.getFloat( "system" );
+        nh.node.user = cpustat.getFloat( "user" );
+        nh.node.nice = cpustat.getFloat( "nice" );
+        nh.node.iowait = cpustat.getFloat( "iowait" );
+        nh.node.steal = cpustat.getFloat( "steal" );
+      }
+    } else if ( type.equals("iostat") ) {
+      JSONObject iostat = json.getJSONObject( "payload" );
+      String nodeName = json.getString( "host" );
+      String deviceName = iostat.getString( "device" );
+      String brickID = nodeName+":"+deviceName;
+      BrickHarness bh = findBrickHarness( brickID );
+      if ( bh != null ) {
+        bh.brick.rkB = iostat.getFloat( "rkB" );
+        bh.brick.wkB = iostat.getFloat( "wkB" );
+        bh.brick.reads = iostat.getFloat( "reads" );
+        bh.brick.writes = iostat.getFloat( "writes" );
+        bh.brick.await = iostat.getFloat( "await" );
+        bh.brick.r_await = iostat.getFloat( "r_await" );
+        bh.brick.w_await = iostat.getFloat( "w_await" );
+        bh.brick.avgqu_sz = iostat.getFloat( "avgqu_sz" );
+        bh.brick.util = iostat.getFloat( "util" );
+      }
+    } else {
+      println( "I don't know about "+type );
     }
   }
 }

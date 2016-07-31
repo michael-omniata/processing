@@ -24,6 +24,18 @@ class Brick {
   public int     use;
   public float   delta_read;
   public float   delta_write;
+  
+  public float rkB; // kilobytes per second read
+  public float wkB; // kilobytes per second written
+  public float reads; // reads per second
+  public float writes; // writes per second
+  public float rrqm; // read requests merged per second
+  public float wrqm; // write requests merged per second
+  public float avgqu_sz; // The average queue length of the requests that were issued to the device.
+  public float r_await; // average time spent (in milliseconds) spent waiting for a read request
+  public float w_await; // average time spent (in milliseconds) spent waiting for a write request
+  public float await; // average time spent (in milliseconds) spent waiting for a request
+  public float util; // percentage of device utilization (saturation level)
 
   Brick ( float cap ) {
     capacity = cap;

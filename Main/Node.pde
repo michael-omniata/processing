@@ -3,6 +3,12 @@
 class Node {
   ArrayList<Brick> bricks;
   String nodeName;
+  public float steal;
+  public float system;
+  public float idle;
+  public float nice;
+  public float iowait;
+  public float user;
 
   Node( String _nodeName ) {
     nodeName = _nodeName;
