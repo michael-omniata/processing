@@ -113,14 +113,22 @@ class BrickHarness extends HarnessRect {
         super.setColor(color(0));
       }
       int stroke_weight = 0;
+      int read_flag = 0;
+      int write_flag = 0;
+      color x = color(0);
       if ( brick.reads > 0 ) {
-        stroke_weight += 2;
+        stroke_weight = 3;
+        read_flag = 1;
       }
       if ( brick.writes > 0 ) {
-        stroke_weight += 3;
+        stroke_weight = 3;
+        write_flag = 1;
       }
       if ( stroke_weight > 0 ) {
-        super.setStroke( 255 );
+        if ( read_flag == 1 && write_flag == 0) x = color(0, 255, 255);
+        else if (write_flag == 1 && read_flag == 0) x = color(255, 255, 0);
+        else if (write_flag == 1 && read_flag == 1) x = color(0, 255, 0);
+        super.setStroke( x );
         super.setStrokeWeight( stroke_weight );
       }
     }

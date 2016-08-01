@@ -6,7 +6,7 @@ class Harness {
   boolean locked = false;
   float xOffset = 0.0; 
   float yOffset = 0.0;
-  int stroke;
+  color stroke;
   int stroke_weight;
   ArrayList<HarnessController>harnessControllers;
 
@@ -64,7 +64,7 @@ class Harness {
   void setColor( color c ) {
     fill( c );
   }
-  void setStroke( int x ) {
+  void setStroke( color x ) {
     stroke = x;
   }
   void setStrokeWeight( int x) {
