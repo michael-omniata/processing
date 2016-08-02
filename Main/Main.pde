@@ -6,7 +6,7 @@ ControlP5 cp5;
 import websockets.*;
 WebsocketClient wsc;
 
-int mode = 2; // 2=2D, 3=3D
+int mode = 3; // 2=2D, 3=3D
 
 int BRICK_COLUMNS = 9;
 int COLUMN_WIDTH = 100;
@@ -133,8 +133,8 @@ void setup() {
 
   wsc = new WebsocketClient(this, "ws://ec2-54-158-33-191.compute-1.amazonaws.com:3001/gluster/stats");
 
- // updateBrickTimedEventGenerator = new TimedEventGenerator(this);
- // updateBrickTimedEventGenerator.setIntervalMs(30000);
+  updateBrickTimedEventGenerator = new TimedEventGenerator(this);
+  updateBrickTimedEventGenerator.setIntervalMs(1000);
 
   if ( mode == 2 ) {
     background(0);
@@ -146,36 +146,31 @@ void setup() {
   }
 }
 
-void updateBrickStates() {
-  println( "Updating bricks" );
-  JSONObject cf = loadJSONObject("http://ec2-54-158-33-191.compute-1.amazonaws.com:3001/gluster/bricks");
-  println( "Got states" );
+void resetIdleBrickStats( int lastMillis, int curMillis ) {
+  for ( BrickHarness bh : brickHarnesses ) {
+    // if we haven't gotten any data about the brick in a while (2 seconds),
+    // reset the stats.
+    int deltaUpdate = curMillis - bh.updatedMillis;
+    if ( deltaUpdate > 2000 ) {
+      bh.brick.reads = 0;
+      bh.brick.writes = 0;
+      bh.brick.util = 0;
+      bh.updatedMillis = curMillis;
+      //println("Resetting "+(bh.brick.getID())+"; last update "+deltaUpdate+" ms ago" );
+    } else {
+      //println("NOT Resetting "+(bh.brick.getID())+"; last update "+deltaUpdate+" ms ago; util is "+bh.brick.util );
 
-  JSONArray brickInfos = cf.getJSONArray("bricks");
-  for ( int i = 0; i < brickInfos.size(); i++ ) {
-    JSONObject brickInfo = brickInfos.getJSONObject(i);
-    BrickHarness brickHarness = findBrickHarness( brickInfo.getString("node")+":"+brickInfo.getString("device") );
-    if ( brickHarness != null) {
-      Brick brick = brickHarness.brick;
-      brick.update(
-        brickInfo.getInt("status") == 1, 
-        brickInfo.getFloat("capacity"), 
-        brickInfo.getFloat("used"), 
-        brickInfo.getInt("clients"), 
-        brickInfo.getFloat("read"), 
-        brickInfo.getFloat("written")
-        );
     }
   }
-  println("Bricks updates");
 }
 
 
 void onTimerEvent() {
-  int millisDiff = millis() - lastMillis;
+  int curMillis = millis();
+  int millisDiff = curMillis - lastMillis;
   lastMillis = millisDiff + lastMillis;  
   println("Got a timer event at " + millis() + "ms (" + millisDiff + ")!");
-  updateBrickStates();
+  resetIdleBrickStats( lastMillis, curMillis );
   println("Required "+(millis()-lastMillis)+" milliseconds" );
 }
 
@@ -190,43 +185,30 @@ void draw() {
 
 import dawesometoolkit.*;
 DawesomeToolkit ds;
-ArrayList<PVector> vectors;
+ArrayList<PVector> brick_vectors;
+ArrayList<PVector> node_vectors;
 float boxSize = 10;
 
 void drawLights() {
-  float spotX = width;
-  float spotY = height/2;
-  float spotZ = 0;
-  spotLight(234, 60, 138, spotX, spotY, spotZ, -1, 0, 1, PI/2, 2);
+  pointLight(0, 0, 100, 0, 0, 0 );
 
-  spotX = width;
-  spotY = 0;
-  spotZ = 0;
-  spotLight(125, 185, 222, spotX, spotY, spotZ, -1, 0, 0, PI/2, 2);
+  ambientLight(0, 0, 60);
 }
 
-color calculateBrickHue( BrickHarness bh ) {
-  if (bh.brick.getStatus() == true) {
-    float use = (float)bh.brick.getUse() / 100;
-    if (use < .5) {
-      return color(use*255*2, 255, 0);
-    } else if (use >= .5) {
-      return color(255, (1-use)*255*2, 0);
-    }
-  }
-  return( color(0) );
+float calculateBrickHue( BrickHarness bh ) {
+  return (100.0-bh.brick.getUse());
 }
 
 color calculateBrickBrightness( BrickHarness bh ) {
-  int boffset = 20;
-  if (bh.brick.getStatus() == true) {
+  int boffset = 60;
+  if (bh.brick.getStatus() ) {
     if ( bh.brick.reads > 0 ) {
       boffset += 20;
     }
     if ( bh.brick.writes > 0 ) {
-      boffset += 50;
+      boffset += 20;
     }
-  } 
+  }
   return( boffset );
 }
 
@@ -236,32 +218,35 @@ boolean calculateBrickVisibility( BrickHarness bh ) {
 }
 
 void setup3D() {
+//  hint(ENABLE_DEPTH_SORT);
   smooth();
   cp5.setAutoDraw(false);
 
-  //colorMode(HSB, color(255,255,255), 100, 100, 100 );
-  colorMode(HSB, 255, 100, 100, 100);
+  colorMode(HSB, 300, 100, 100, 255);
 
   ds = new DawesomeToolkit(this);
-  vectors = ds.fibonacciSphereLayout(brickHarnesses.size(), 300);
+  brick_vectors = ds.fibonacciSphereLayout(brickHarnesses.size(), 250);
+  //node_vectors  = ds.fibonacciSphereLayout(nodeHarnesses.size(), 30);
+  node_vectors  = ds.circularLayout(nodeHarnesses.size(), 30);
 }
 
 void draw3D() {
 
   pushMatrix();
   background(0);
-  //    drawLights();
-  lights();
+  drawLights();
+  //lights();
   fill(255);
   noStroke();
   translate(width/2, height/2);
+
   float xRot = radians(180 -  millis()*.00);
   float yRot = radians(180 -  millis()*.01);
   rotateX( xRot ); 
   rotateY( yRot );
 
   int counter = 0;
-  for (PVector p : vectors) {
+  for (PVector p : brick_vectors) {
     pushMatrix();
     //float scaler = sin(frameCount/100.0)*1.5;
     //p = PVector.mult(p,scaler);
@@ -277,18 +262,62 @@ void draw3D() {
         calculateBrickBrightness( bh )
         );
       //box(boxSize,boxSize,boxSize);
-      sphere(boxSize);
+//      if ( bh.brick.util > 0 ) {
+//        shininess(8.0);
+//        emissive(200, 100, 20 );
+//      }
+      sphere(boxSize * (1+(bh.brick.util/100.0)));
     }
+    popMatrix();
+    if ( bh.brick.util > 0 ) {
+      pushStyle();
+      stroke(200,100,100);
+      line(0, 0, 0, p.x, p.y, p.z);
+      popStyle();
+    }
+    counter++;
+  }
+  
+
+  pushMatrix();
+  xRot = radians(180 -  millis()*.03);
+  yRot = radians(180 -  millis()*.03);
+  rotateX( xRot ); 
+  rotateY( yRot );
+
+  counter = 0;
+  for (PVector p : node_vectors) {
+    pushMatrix();
+    //float scaler = sin(frameCount/100.0)*1.5;
+    //p = PVector.mult(p,scaler);
+    translate(p.x, p.y, p.z);
+    PVector polar = ds.cartesianToPolar(p);
+    rotateY(polar.y);
+    rotateZ(polar.z);
+    NodeHarness nh = nodeHarnesses.get(counter);
+    fill( (100 - (nh.node.idle/8)), 100, 100 - (nh.node.iowait/8) );
+    shininess(10.0);
+    sphere(20);
     popMatrix();
     counter++;
   }
+
+  pushStyle();
+    shininess(0);
+    fill(200,100,100,80);
+    sphere(70);
+  popStyle();
+
+  popMatrix();
   popMatrix();
   gui();
 }
 
 void gui() {
   hint(DISABLE_DEPTH_TEST);
+  lights();
   cp5.draw();
+
   hint(ENABLE_DEPTH_TEST);
 }
 
@@ -331,6 +360,7 @@ void webSocketEvent(String msg) {
       JSONObject cpustat = json.getJSONObject( "payload" );
       NodeHarness nh = findNodeHarness( json.getString( "host" ) );
       if ( nh != null ) {
+        nh.updatedMillis = millis();
         nh.node.idle = cpustat.getFloat( "idle" );
         nh.node.system = cpustat.getFloat( "system" );
         nh.node.user = cpustat.getFloat( "user" );
@@ -345,6 +375,7 @@ void webSocketEvent(String msg) {
       String brickID = nodeName+":"+deviceName;
       BrickHarness bh = findBrickHarness( brickID );
       if ( bh != null ) {
+        bh.updatedMillis = millis();
         bh.brick.rkB = iostat.getFloat( "rkB" );
         bh.brick.wkB = iostat.getFloat( "wkB" );
         bh.brick.reads = iostat.getFloat( "reads" );
@@ -354,6 +385,9 @@ void webSocketEvent(String msg) {
         bh.brick.w_await = iostat.getFloat( "w_await" );
         bh.brick.avgqu_sz = iostat.getFloat( "avgqu_sz" );
         bh.brick.util = iostat.getFloat( "util" );
+        if ( bh.brick.util > 0 ) {
+          println( "Updated "+bh.brick.getID()+" to "+bh.brick.util );
+        }
       }
     } else {
       println( "I don't know about "+type );

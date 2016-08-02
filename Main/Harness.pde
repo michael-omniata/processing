@@ -7,12 +7,14 @@ class Harness {
   float xOffset = 0.0; 
   float yOffset = 0.0;
   color stroke;
+  int updatedMillis; // when model was updated with actual values
   int stroke_weight;
   ArrayList<HarnessController>harnessControllers;
 
   Harness( int x, int y ) {
     xPos = x;
     yPos = y;
+    updatedMillis = 0;
     harnessControllers = new ArrayList<HarnessController>();
   }
   void addController( Controller c, int _xOffset, int _yOffset ) {

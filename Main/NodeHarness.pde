@@ -40,10 +40,8 @@ class NodeHarness extends HarnessRect {
 }
 
 NodeHarness findNodeHarness( String nodeName ) {
-  println( "Looking for "+nodeName );
   for (NodeHarness harness : nodeHarnesses) {
     if ( harness.getNode().getName().equals(nodeName) ) {
-      println( "Found "+nodeName );
       return harness;
     }
   }

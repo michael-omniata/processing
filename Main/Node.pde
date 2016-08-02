@@ -21,7 +21,6 @@ class Node {
     return true;
   }
   String getName() {
-    println( "I am "+nodeName );
     return nodeName;
   }
 

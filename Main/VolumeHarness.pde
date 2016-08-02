@@ -68,10 +68,8 @@ class VolumeHarness extends HarnessEllipse {
 }
 
 VolumeHarness findVolumeHarness( String volumeName ) {
-  println( "Looking for "+volumeName );
   for (VolumeHarness harness : volumeHarnesses) {
     if ( harness.getVolume().getName().equals(volumeName) ) {
-      println( "Found "+volumeName );
       return harness;
     }
   }
