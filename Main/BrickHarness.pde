@@ -7,12 +7,14 @@ class BrickHarness extends HarnessRect {
   Textfield nodeField;
   Textfield deviceField;
   Textfield volumeField;
+  GlusterHarness glusterHarness;
   public Brick brick;
   public NodeHarness nodeHarnessContainer;
   public VolumeHarness volumeHarnessContainer;
 
-  BrickHarness( int x, int y, int w, int h ) {
+  BrickHarness( GlusterHarness _gh, int x, int y, int w, int h ) {
     super( x, y, w, h );
+    glusterHarness = _gh;
     nodeHarnessContainer = null;
     volumeHarnessContainer = null;
     usageSlider = cp5.addSlider(this, "sliderUsageValue")
@@ -84,7 +86,7 @@ class BrickHarness extends HarnessRect {
       if ( !input.equals("") ) {
         println( "input is "+input );
         NodeHarness nodeHarness;
-        if ( (nodeHarness = findNodeHarness( input )) != null) {
+        if ( (nodeHarness = glusterHarness.findNodeHarness( input )) != null) {
           nodeHarness.attach( this, "/dev/????" );
           deviceField.setValue( brick.getDeviceName() );
         }
@@ -95,7 +97,7 @@ class BrickHarness extends HarnessRect {
       if ( !input.equals("") ) {
         println( "input is "+input );
         VolumeHarness volumeHarness;
-        if ( (volumeHarness = findVolumeHarness( input )) != null) {
+        if ( (volumeHarness = glusterHarness.findVolumeHarness( input )) != null) {
           volumeHarness.attach( this );
         }
       }
@@ -139,11 +141,3 @@ class BrickHarness extends HarnessRect {
   }
 }
 
-BrickHarness findBrickHarness( String brickID ) {
-  for ( BrickHarness bh : brickHarnesses ) {
-    if ( brickID.equals( bh.brick.getID() ) ) {
-      return bh;
-    }
-  }
-  return null;
-}

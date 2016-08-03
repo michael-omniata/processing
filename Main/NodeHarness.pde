@@ -5,9 +5,11 @@ class NodeHarness extends HarnessRect {
   int slots;
   Textfield nodeName;
   public Toggle filter;
+  GlusterHarness glusterHarness;
   ArrayList<BrickHarness> brickHarnesses;
-  NodeHarness( String name, int x, int y, int w, int h ) {
+  NodeHarness( GlusterHarness _gh, String name, int x, int y, int w, int h ) {
     super( x, y, w, h );
+    glusterHarness = _gh;
     node = new Node( name );
     brickHarnesses = new ArrayList<BrickHarness>();
     filter = cp5.addToggle(this, "filter")
@@ -39,11 +41,3 @@ class NodeHarness extends HarnessRect {
   }
 }
 
-NodeHarness findNodeHarness( String nodeName ) {
-  for (NodeHarness harness : nodeHarnesses) {
-    if ( harness.getNode().getName().equals(nodeName) ) {
-      return harness;
-    }
-  }
-  return null;
-}

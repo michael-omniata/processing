@@ -3,10 +3,12 @@ class VolumeHarness extends HarnessEllipse {
   Slider usageIndicator;
   Textfield volumeName;
   public Toggle filter;
+  GlusterHarness glusterHarness;
   Volume volume;
 
-  VolumeHarness( String _name, int x, int y, int wide, int high) {
+  VolumeHarness( GlusterHarness _gh, String _name, int x, int y, int wide, int high) {
     super(x, y, wide, high);
+    glusterHarness = _gh;
     volume = new Volume( _name );
 
     volumeName = cp5.addTextfield(this, "" )
@@ -67,11 +69,3 @@ class VolumeHarness extends HarnessEllipse {
   }
 }
 
-VolumeHarness findVolumeHarness( String volumeName ) {
-  for (VolumeHarness harness : volumeHarnesses) {
-    if ( harness.getVolume().getName().equals(volumeName) ) {
-      return harness;
-    }
-  }
-  return null;
-}
