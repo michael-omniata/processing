@@ -1,6 +1,8 @@
 //The BrickHarness class is the GUI for a Brick, attributes can be adjusted through ControlP5 for testing
 
 class BrickHarness extends HarnessRect {
+  int DEFAULT_RADIUS = 10;
+
   int sliderUsageValue;
   Slider usageSlider;
   Toggle statusToggle;
@@ -11,9 +13,12 @@ class BrickHarness extends HarnessRect {
   public Brick brick;
   public NodeHarness nodeHarnessContainer;
   public VolumeHarness volumeHarnessContainer;
+  float radius;
 
   BrickHarness( GlusterHarness _gh, int x, int y, int w, int h ) {
     super( x, y, w, h );
+    radius = DEFAULT_RADIUS;
+
     glusterHarness = _gh;
     nodeHarnessContainer = null;
     volumeHarnessContainer = null;
@@ -138,6 +143,64 @@ class BrickHarness extends HarnessRect {
   void statusToggle(boolean state) {
     if ( brick == null ) return;
     brick.setStatus( state );
+  }
+
+  float calculateHue() {
+    return (100.0-brick.getUse());
+  }
+
+  float calculateBrightness() {
+    float boffset = 60;
+    if (brick.getStatus() ) {
+      if ( brick.reads > 0 ) {
+        boffset += 20;
+      }
+      if ( brick.writes > 0 ) {
+        boffset += 20;
+      }
+    }
+    return( boffset );
+  }
+
+  float calculateSaturation() {
+    return 100;
+  }
+
+  boolean hasActivity() {
+    return (brick.util > 0);
+  }
+
+  float calculateActivityIndicatorHue() {
+    return (200 + (100 * brick.rkB / (brick.rkB+brick.wkB)));
+  }
+  float calculateActivityIndicatorBrightness() {
+    return 100;
+  }
+  float calculateActivityIndicatorSaturation() {
+    return 100;
+  }
+
+  float calculateActivityIndicatorWeight() {
+    if ( brick.rkB > 0 && brick.wkB > 0 ) {
+      return 2;
+    }
+    return 1;
+  }
+
+  boolean calculateVisibility() {
+    return nodeHarnessContainer.filter.getState() && volumeHarnessContainer.filter.getState();
+  }
+
+  void drawActivity( PVector p ) {
+    pushStyle();
+    stroke( calculateActivityIndicatorHue(), calculateActivityIndicatorBrightness(), calculateActivityIndicatorSaturation() );
+    line( 0, 0, 0, p.x, p.y, p.z );
+    popStyle();
+  }
+  
+  void draw3D() {
+    fill( calculateHue(), 100, calculateBrightness());
+    sphere(radius * (1+(brick.util/100.0)));
   }
 }
 

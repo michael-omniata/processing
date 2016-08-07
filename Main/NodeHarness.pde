@@ -7,6 +7,8 @@ class NodeHarness extends HarnessRect {
   public Toggle filter;
   GlusterHarness glusterHarness;
   ArrayList<BrickHarness> brickHarnesses;
+  float radius = 20;
+  
   NodeHarness( GlusterHarness _gh, String name, int x, int y, int w, int h ) {
     super( x, y, w, h );
     glusterHarness = _gh;
@@ -38,6 +40,23 @@ class NodeHarness extends HarnessRect {
       brickHarnesses.add( brickHarness );
       brickHarness.setNodeContainer( this );
     }
+  }
+
+  float calculateHue() {
+    return (100.0-(100.0-node.idle));
+  }
+  float calculateBrightness() {
+    return(100.0 - node.iowait);
+  }
+  float calculateSaturation() {
+    return 100;
+  }
+  boolean hasActivity() {
+    return false;
+  }
+  void draw3D() {
+    fill(calculateHue(), calculateBrightness(), calculateSaturation());
+    sphere(radius);
   }
 }
 

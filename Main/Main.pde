@@ -22,6 +22,7 @@ void setup() {
   //  }
   cp5 = new ControlP5(this);
   glusterHarness = new GlusterHarness( this, "http://ec2-54-158-33-191.compute-1.amazonaws.com:3001/gluster" );
+  //glusterHarness = new GlusterHarness( this, "gluster.json" );
   wsc = new WebsocketClient(this, "ws://ec2-54-158-33-191.compute-1.amazonaws.com:3001/gluster/stats");
 
   if ( mode == 2 ) {
@@ -62,7 +63,7 @@ void draw2D() {
 
 void gui() {
   hint(DISABLE_DEPTH_TEST);
-  lights();
+  lights(); // otherwise cp5 controllers are dark
   cp5.draw();
   hint(ENABLE_DEPTH_TEST);
 }
@@ -78,7 +79,7 @@ void onTimerEvent() {
   int curMillis = millis();
   int millisDiff = curMillis - lastMillis;
   lastMillis = millisDiff + lastMillis;
-  println("Got a timer event at " + millis() + "ms (" + millisDiff + ")!");
-  glusterHarness.resetIdleBrickStats( lastMillis, curMillis );
-  println("Required "+(millis()-lastMillis)+" milliseconds" );
+//  println("Got a timer event at " + millis() + "ms (" + millisDiff + ")!");
+  glusterHarness.tickerSecond( lastMillis, curMillis );
+//  println("Required "+(millis()-lastMillis)+" milliseconds" );
 }

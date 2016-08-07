@@ -15,24 +15,69 @@ class GlusterHarness {
   public ArrayList<BrickHarness>  brickHarnesses;
   private TimedEventGenerator updateBrickTimedEventGenerator;
 
-  DawesomeToolkit ds;
-  ArrayList<PVector> brick_vectors;
-  ArrayList<PVector> node_vectors;
   float boxSize = 10;
 
+  HarnessGroup nodeHarnessGroup;
+  HarnessGroup brickHarnessGroup;
+
+  Chart cpuUsage;
+
   GlusterHarness( PApplet app, String source ) {
+
+    nodeHarnessGroup = new HarnessGroup( app, width/2, height/2, 0 );
+    nodeHarnessGroup.circularLayout( 30 );
+    nodeHarnessGroup.setRotationAnglesAndSpeeds( 180, 180, 0.01, 0.03 );
+    nodeHarnessGroup.setContainer( 90, 200, 100, 100, 80 ); // partially transparent blue sphere, radius 90
+    nodeHarnessGroup.startXRotation();
+    nodeHarnessGroup.startYRotation();
+    nodeHarnessGroup.containerEnabled = true;
+
+    brickHarnessGroup = new HarnessGroup( app, width/2, height/2, 0 );
+    brickHarnessGroup.fibonacciSphereLayout( 250 );
+    brickHarnessGroup.setRotationAnglesAndSpeeds( 180, 180, 0.01, 0.01 );
+    brickHarnessGroup.stopXRotation();
+    brickHarnessGroup.startYRotation();
+
     nodeHarnesses   = new ArrayList<NodeHarness>();
     volumeHarnesses = new ArrayList<VolumeHarness>();
     brickHarnesses  = new ArrayList<BrickHarness>();
 
     initializeFromConfig( source );
 
+    for ( NodeHarness nh : nodeHarnesses ) {
+      nodeHarnessGroup.addHarness( nh );
+    }
+    for ( BrickHarness bh : brickHarnesses ) {
+      brickHarnessGroup.addHarness( bh );
+    }
+
     updateBrickTimedEventGenerator = new TimedEventGenerator(app);
     updateBrickTimedEventGenerator.setIntervalMs(1000);
 
-    ds = new DawesomeToolkit(app);
-    brick_vectors = ds.fibonacciSphereLayout(brickHarnesses.size(), 250);
-    node_vectors  = ds.circularLayout(nodeHarnesses.size(), 30);
+    cpuUsage = cp5.addChart("cpu")
+               .setPosition(50, 50)
+               .setSize(200, 100)
+               .setRange(0, 100)
+               .setView(Chart.LINE) // use Chart.LINE, Chart.PIE, Chart.AREA, Chart.BAR_CENTERED
+               .setStrokeWeight(1.5)
+               .setColorCaptionLabel(color(100))
+               ;
+
+    for ( NodeHarness nh : nodeHarnesses ) {
+      cpuUsage.addDataSet(nh.node.nodeName);
+      //cpuUsage.setColor(nh.node.nodeName,color(255,0,0) );
+      cpuUsage.setData(nh.node.nodeName, new float[120]);
+    }
+  }
+
+  void tickerSecond( int lastMillis, int curMillis ) {
+    resetIdleBrickStats( lastMillis, curMillis );
+
+    for ( int i = 0; i < nodeHarnesses.size(); i++ ) {
+      NodeHarness nh = nodeHarnesses.get(i);
+      cpuUsage.setColorValue( 100 + (i*25) );
+      cpuUsage.push(nh.node.nodeName, 100 - nh.node.idle );
+    }
   }
 
   void resetIdleBrickStats( int lastMillis, int curMillis ) {
@@ -199,9 +244,6 @@ class GlusterHarness {
           bh.brick.w_await = iostat.getFloat( "w_await" );
           bh.brick.avgqu_sz = iostat.getFloat( "avgqu_sz" );
           bh.brick.util = iostat.getFloat( "util" );
-          if ( bh.brick.util > 0 ) {
-            println( "Updated "+bh.brick.getID()+" to "+bh.brick.util );
-          }
         }
       } else {
         println( "I don't know about "+type );
@@ -209,30 +251,19 @@ class GlusterHarness {
     }
   }
 
-  float calculateBrickHue( BrickHarness bh ) {
-    return (100.0-bh.brick.getUse());
-  }
-
-  color calculateBrickBrightness( BrickHarness bh ) {
-    int boffset = 60;
-    if (bh.brick.getStatus() ) {
-      if ( bh.brick.reads > 0 ) {
-        boffset += 20;
-      }
-      if ( bh.brick.writes > 0 ) {
-        boffset += 20;
-      }
-    }
-    return( boffset );
-  }
-
-  boolean calculateBrickVisibility( BrickHarness bh ) {
-    return bh.nodeHarnessContainer.filter.getState() && bh.volumeHarnessContainer.filter.getState();
-  }
-
   void draw3D() {
     pushMatrix();
       background(0);
+      brickHarnessGroup.draw();
+      nodeHarnessGroup.draw();
+    popMatrix();
+  }
+
+  /*
+  void draw3D_ORIG() {
+    pushMatrix();
+      background(0);
+
       //lights();
       fill(255);
       noStroke();
@@ -262,11 +293,11 @@ class GlusterHarness {
             sphere(boxSize * (1+(bh.brick.util/100.0)));
           popMatrix();
 
-          //if ( (bh.brick.rkB+bh.brick.wkB) > 0 ) {
           if ( (bh.brick.util) > 0 ) {
             pushStyle();
+            // set the color of the line to be based on a ratio of reads to writes
             stroke(200 + (100 * bh.brick.rkB / (bh.brick.rkB+bh.brick.wkB)),100,100);
-            if ( (bh.brick.rkB > 0) && (bh.brick.wkB > 0) ) {
+            if ( (bh.brick.rkB > 0) && (bh.brick.wkB > 0) ) { // if both reads and writes, make the line thicker
               strokeWeight(2);
             }
             line(0, 0, 0, p.x, p.y, p.z);
@@ -292,8 +323,13 @@ class GlusterHarness {
           rotateY(polar.y);
           rotateZ(polar.z);
           NodeHarness nh = nodeHarnesses.get(counter);
-          fill( (100 - (nh.node.idle/8)), 100, 100 - (nh.node.iowait/8) );
-          shininess(10.0);
+          float _hue = (100.0-(100.0-nh.node.idle));
+          float _brightness = 100.0 - nh.node.iowait;
+          fill( _hue, 100, _brightness );
+          if ( _brightness < 80 || _hue < 80 ) {
+            println( "Node "+nh.node.getName()+ " hue "+_hue+" ("+nh.node.idle+") brightness "+_brightness+" ("+nh.node.iowait+")" );
+          }
+          text( nh.node.nodeName, 0, 20 );
           sphere(20);
         popMatrix();
         counter++;
@@ -308,6 +344,7 @@ class GlusterHarness {
       popMatrix();
     popMatrix();
   }
+*/
 
   void draw2D() {
     background(0);

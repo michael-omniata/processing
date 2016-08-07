@@ -2,7 +2,7 @@
 
 class Node {
   ArrayList<Brick> bricks;
-  String nodeName;
+  public String nodeName;
   public float steal;
   public float system;
   public float idle;

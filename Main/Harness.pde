@@ -79,4 +79,66 @@ class Harness {
       hc.setPosition( xPos, yPos );
     }
   }
+  // override this in subclasses
+  float calculateHue() {
+    return( 0 );
+  }
+  // override this in subclasses
+  float calculateSaturation() {
+    return( 100 );
+  }
+  // override this in subclasses
+  float calculateBrightness() {
+    return( 100 );
+  }
+  // override this in subclasses
+  boolean calculateVisibility() {
+    return( true );
+  }
+  float calculateRadius() {
+    return( 10 );
+  }
+  boolean hasActivity() {
+    return false;
+  }
+  float calculateActivityIndicatorHue() {
+    return 200; // blue
+  }
+  float calculateActivityIndicatorWeight() {
+    return 1;
+  }
+  // override this in subclasses
+  float calculateContainerHue() {
+    return( 0 );
+  }
+  // override this in subclasses
+  float calculateContainerSaturation() {
+    return( 100 );
+  }
+  // override this in subclasses
+  float calculateContainerBrightness() {
+    return( 100 );
+  }
+  // override this in subclasses
+  boolean calculateContainerVisibility() {
+    return( false );
+  }
+  // override this in subclasses
+  float calculateContainerRadius() {
+    return( 80 );
+  }
+  // override this in subclasses
+  void draw3D() {
+    fill( calculateHue(), calculateSaturation(), calculateBrightness() );
+    sphere( calculateRadius() );
+  }
+  void drawActivity( PVector p ) {
+    pushStyle();
+    // set the color of the line to be based on a ratio of reads to writes
+    stroke(calculateActivityIndicatorHue());
+    strokeWeight(calculateActivityIndicatorWeight());
+    line(0, 0, 0, p.x, p.y, p.z);
+    popStyle();
+  }
 }
+
