@@ -194,7 +194,7 @@ class BrickHarness extends HarnessRect {
   void drawActivity( PVector p ) {
     pushStyle();
     stroke( calculateActivityIndicatorHue(), calculateActivityIndicatorBrightness(), calculateActivityIndicatorSaturation() );
-    line( 0, 0, 0, p.x, p.y, p.z );
+    rayTrace( p.x, p.y, p.z, 0, 0, 0, glusterHarness.nodeHarnessGroup.containerRadius );
     popStyle();
   }
   
@@ -203,4 +203,3 @@ class BrickHarness extends HarnessRect {
     sphere(radius * (1+(brick.util/100.0)));
   }
 }
-

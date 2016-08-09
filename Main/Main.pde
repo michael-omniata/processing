@@ -83,3 +83,17 @@ void onTimerEvent() {
   glusterHarness.tickerSecond( lastMillis, curMillis );
 //  println("Required "+(millis()-lastMillis)+" milliseconds" );
 }
+
+void rayTrace(float x0, float y0, float z0, float x1, float y1, float z1, float radius) {
+ float discriminant, t, lineX, lineY, lineZ;
+ float dx = x1 - x0, dy = y1 - y0, dz = z1 - z0;
+ float a = dx*dx + dy*dy + dz*dz;
+ float b = 2*dx*(x0-x1) + 2*dy*(y0-y1) + 2*dz*(z0-z1);
+ float c = x1*x1 + y1*y1 + z1*z1 + x0*x0 + y0*y0 + z0*z0 - 2*(x1*x0 + y1*y0 + z1*z0) - radius*radius;
+ discriminant = b*b - 4*a*c;
+ t = ( -b - sqrt(discriminant) ) / (2*a);
+ lineX = x0 + t*dx;
+ lineY = y0 + t*dy;
+ lineZ = z0 + t*dz;
+ line(x0, y0, z0, lineX, lineY, lineZ);
+}
