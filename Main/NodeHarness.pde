@@ -1,45 +1,34 @@
 //The NodeHarness class contains the GUI for the node
+HashMap nodeHarnesses = new HashMap();
 
-class NodeHarness extends HarnessRect {
+NodeHarness NodeHarness_findOrCreate( String nodeName ) {
+  NodeHarness n = (NodeHarness)nodeHarnesses.get( nodeName );
+  if ( n == null ) {
+    n = new NodeHarness( nodeName );
+    nodeHarnesses.put( nodeName, n );
+  }
+  return n;
+}
+
+class NodeHarness extends Harness {
   Node node;
-  int slots;
-  Textfield nodeName;
-  public Toggle filter;
-  GlusterHarness glusterHarness;
-  ArrayList<BrickHarness> brickHarnesses;
+  ArrayList<CpuHarness>  cpuHarnesses;
+  ArrayList<DiskHarness> diskHarnesses;
   float radius = 20;
   
-  NodeHarness( GlusterHarness _gh, String name, int x, int y, int w, int h ) {
-    super( x, y, w, h );
-    glusterHarness = _gh;
-    node = new Node( name );
-    brickHarnesses = new ArrayList<BrickHarness>();
-    filter = cp5.addToggle(this, "filter")
-      .setSize(100, 20)
-      .setCaptionLabel("Filter")
-      ;
-    nodeName = cp5.addTextfield(this, "" )
-      .setSize(100, 20)
-      .setValue( name )
-      .lock()
-      ;
-    addController( nodeName, 0, -15 );
-    addController( filter, 0, -30 );
+  NodeHarness( String nodeName ) {
+    node = Node_findOrCreate( nodeName );
+    diskHarnesses = new ArrayList<DiskHarness>();
+    cpuHarnesses  = new ArrayList<CpuHarness>();
   }
 
-  Node getNode() {
-    return node;
+  void attach( DiskHarness diskHarness ) {
+    diskHarnesses.add( diskHarness );
+    diskHarness.setNodeContainer( this );
   }
-  void update() {
-    super.update();
-    super.setColor(color(0, 0, 255));
-    super.draw();
-  }
-  void attach( BrickHarness brickHarness, String deviceName ) {
-    if ( node.mount( brickHarness.brick, deviceName ) ) {
-      brickHarnesses.add( brickHarness );
-      brickHarness.setNodeContainer( this );
-    }
+
+  void attach( CpuHarness cpuHarness ) {
+    cpuHarnesses.add( cpuHarness );
   }
 
   float calculateHue() {

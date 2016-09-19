@@ -1,7 +1,16 @@
 //The node class has an array of bricks and their names and bricks can be "attached" to it
+HashMap nodes = new HashMap();
+
+Node Node_findOrCreate( String nodeName ) {
+  Node n = (Node)nodes.get( nodeName );
+  if ( n == null ) {
+    n = new Node( nodeName );
+    nodes.put( nodeName, n );
+  }
+  return n;
+}
 
 class Node {
-  ArrayList<Brick> bricks;
   public String nodeName;
   public float steal;
   public float system;
@@ -9,30 +18,35 @@ class Node {
   public float nice;
   public float iowait;
   public float user;
+  public int   updatedMillis;
+  public HashMap cpus;
+  public HashMap disks;
 
   Node( String _nodeName ) {
     nodeName = _nodeName;
-    bricks = new ArrayList<Brick>();
-  }
-  boolean mount( Brick brick, String deviceName ) {
-    brick.setDeviceName( deviceName );
-    bricks.add( brick );
-    println( "mounting "+deviceName );
-    return true;
-  }
-  String getName() {
-    return nodeName;
+    steal    = 0;
+    system   = 0;
+    idle     = 0;
+    nice     = 0;
+    iowait   = 0;
+    user     = 0;
+    updatedMillis = 0;
+    disks    = new HashMap();
+    cpus     = new HashMap();
   }
 
-  Brick unmount( String deviceName ) {
-    Brick brick;
-    for (int i = 0; i < bricks.size(); i++ ) {
-      if ( bricks.get(i).getDeviceName().equals(deviceName) ) {
-        brick = bricks.remove(i);
-        brick.setDeviceName( null );
-        return brick;
-      }
-    }
-    return null;
+  void attach( Cpu cpu ) {
+    cpus.put( cpu.ID, cpu );
   }
+
+  void attach( Disk disk ) {
+    disks.put( disk.ID, disk );
+    disk.setNodeContainer( this );
+  }
+
+  void remove( Disk disk ) {
+    disks.remove( disk.ID );
+    disk.setNodeContainer( null );
+  }
+
 }
