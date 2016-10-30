@@ -32,6 +32,8 @@ class HarnessGroup extends Harness {
   float xPos, yPos, zPos;
   float offset_from_poles;
   float min_radius, max_radius;
+  float zIncrement;
+  int  numItems;
   DawesomeToolkit ds;
 
   HarnessGroup( PApplet app, float _xPos, float _yPos, float _zPos, float _xOffset, float _yOffset, float _zOffset ) {
@@ -119,6 +121,14 @@ class HarnessGroup extends Harness {
     radiusOfNode = _radiusOfNode;
     vectors = ds.vogelLayout( this.harnesses.size(), (int)radiusOfNode );
   }
+  void helixLayout( float _zIncrement, float _increment, int _numItems, float _radius ) {
+    layout = "helix";
+    zIncrement = _zIncrement;
+    increment  = _increment;
+    numItems   = _numItems;
+    radius     = _radius;
+    vectors    = helix( zIncrement, increment, numItems, radius );
+  }
   void fibonacciSphereLayout( float _radius ) {
     layout = "fibonacciSphere";
     radius = _radius;
@@ -160,6 +170,8 @@ class HarnessGroup extends Harness {
   void reLayout() {
     if ( layout.equals("fibonacciSphere") ) {
       fibonacciSphereLayout( radius );
+    } else if ( layout.equals("helix") ) {
+      helixLayout( zIncrement, increment, numItems, radius );
     } else if ( layout.equals("concentric") ) {
       concentricSphereLayout( min_radius, max_radius );
     } else if ( layout.equals("circular") ) {

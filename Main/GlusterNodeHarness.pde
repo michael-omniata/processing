@@ -44,37 +44,8 @@ class GlusterNodeHarness extends Harness {
 
 
   void draw3D() {
-    fill(calculateHue(), calculateBrightness(), calculateSaturation());
+    fill(calculateHue(), calculateSaturation(), calculateBrightness());
     sphere(radius);
-
-/*
-    if ( activeBricks > 0 ) {
-      PVector p = pvector;
-      pushStyle();
-      pushMatrix();
-        stroke(0,0,100);
-        strokeWeight(1.5);
-        float len = radius*8;
-
-        PVector p2 = p.copy();
-        p2.normalize();
-        p2.mult(len);
-        line( 0, 0, 0, p2.x, p2.y, p2.z );
-
-        for ( int i = 0; i < 3; i++ ) {
-          p2.normalize();
-          p2.mult(70*(i+1));
-          pushMatrix();
-            translate(p2.x, p2.y, p2.z);
-            sphere(5);
-          popMatrix();
-        }
-      popMatrix();
-      popStyle();
-
-      activeBricks = 0;
-    }
-*/
   }
 }
 

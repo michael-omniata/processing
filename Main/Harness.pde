@@ -24,6 +24,7 @@ class Harness {
   Shape3D shape;
   int curColor;
   DawesomeToolkit ds;
+  HarnessGroup harnessGroup;
   ArrayList<HarnessController>harnessControllers;
 
   Harness() {
@@ -171,6 +172,10 @@ class Harness {
   void preTransform() {
   }
 
+  void setHarnessGroup( HarnessGroup harnessGroup ) {
+    this.harnessGroup = harnessGroup;
+  }
+
   // override this in subclasses
   void draw3D() {
     if ( isClickable ) {
@@ -190,9 +195,20 @@ class Harness {
       }
       shape.draw();
     } else {
-      fill(calculateHue(), calculateBrightness(), calculateSaturation());
-      sphere(calculateRadius());
-
+      if ( wireFrame ) {
+        noFill();
+        stroke(calculateHue(), calculateSaturation(), calculateBrightness());
+      } else {
+        if ( this.isInside ) {
+          fill(calculateHue(),calculateSaturation(),20);
+        } else {
+          fill(calculateHue(), calculateSaturation(), calculateBrightness());
+        }
+      }
+      if ( spheresEnabled ) {
+        shininess(shinyVal);
+        sphere(calculateRadius());
+      }
     }
 
     modelX = modelX( 0, 0, 0 );

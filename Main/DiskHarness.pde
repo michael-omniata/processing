@@ -17,6 +17,7 @@ class DiskHarness extends Harness {
 
   public Disk disk;
   public NodeHarness nodeHarnessContainer;
+  public HarnessGroup cpuHarnessGroup;
   float radius;
 
   DiskHarness( String nodeName, String deviceName ) {
@@ -30,6 +31,11 @@ class DiskHarness extends Harness {
   void setNodeContainer( NodeHarness _nodeHarness ) {
     nodeHarnessContainer = _nodeHarness;
   }
+
+  void setCpuHarnessGroup( HarnessGroup cpuHarnessGroup ) {
+    this.cpuHarnessGroup = cpuHarnessGroup;
+  }
+
   boolean attach( Disk _disk ) {
     if ( disk != null ) return false; // Harness already has a disk
     disk = _disk;
@@ -91,12 +97,5 @@ class DiskHarness extends Harness {
     line( 0, 0, 0, p.x, p.y, p.z );
     popStyle();
   }
-  
-  /*
-  void draw3D() {
-    fill( calculateHue(), calculateSaturation(), calculateBrightness());
-    sphere( calculateRadius() );
-  }
-  */
 }
 

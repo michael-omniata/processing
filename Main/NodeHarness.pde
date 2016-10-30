@@ -44,7 +44,7 @@ class NodeHarness extends Harness {
     return false;
   }
   void draw3D() {
-    fill(calculateHue(), calculateBrightness(), calculateSaturation());
+    fill(calculateHue(), calculateSaturation(), calculateBrightness());
     sphere(radius);
   }
 }

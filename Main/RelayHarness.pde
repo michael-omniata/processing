@@ -6,14 +6,20 @@ class RelayHarness {
   public ArrayList<RTProcHarness>   rtProcHarnesses;
   public ArrayList<DiskHarness>     diskHarnesses;
   public ArrayList<KTServerHarness> ktserverHarnesses;
+  public ArrayList<RelayStreamHarness> relayStreamHarnesses;
+  public ArrayList<RelaySubStreamHarness> relaySubStreamHarnesses;
   float xPos;
   float yPos;
   float zPos;
+  String nodeName;
+  int total_eps;
 
-  public HarnessGroup rtProcHarnessGroup;
+  public RTProcHarnessGroup rtProcHarnessGroup;
   public HarnessGroup cpuHarnessGroup;
   public HarnessGroup diskHarnessGroup;
   public HarnessGroup ktserverHarnessGroup;
+  public HarnessGroup relayStreamHarnessGroup;
+  public HarnessGroup relaySubStreamHarnessGroup;
 
   Chart cpuUsage;
 
@@ -21,6 +27,7 @@ class RelayHarness {
     xPos = _xPos;
     yPos = _yPos;
     zPos = _zPos;
+    nodeName = thisNodeName;
 
     diskHarnessGroup = new HarnessGroup( app, xPos, yPos, zPos, 0, 0, 0 );
     diskHarnessGroup.circularLayout( 40 );
@@ -48,31 +55,65 @@ class RelayHarness {
     ktserverHarnessGroup.startYRotation();
     ktserverHarnessGroup.stopZRotation();
 
-    rtProcHarnessGroup = new HarnessGroup( app, xPos, yPos, zPos, 0, 0, -100 );
+    rtProcHarnessGroup = new RTProcHarnessGroup( app, xPos, yPos, zPos, 0, 0, -75 );
     rtProcHarnessGroup.circularLayout( 200 );
     rtProcHarnessGroup.setRotationAnglesAndSpeeds( 180, 180, 0, 0.01, 0.005, 0 );
     rtProcHarnessGroup.startXRotation();
     rtProcHarnessGroup.startYRotation();
     rtProcHarnessGroup.stopZRotation();
 
+    relayStreamHarnessGroup = new HarnessGroup( app, xPos, yPos, zPos, 0, 0, -150 );
+    relayStreamHarnessGroup.circularLayout( 150 );
+    relayStreamHarnessGroup.setRotationAnglesAndSpeeds( 180, 180, 0, 0.01, 0.005, 0 );
+    relayStreamHarnessGroup.startXRotation();
+    relayStreamHarnessGroup.startYRotation();
+    relayStreamHarnessGroup.stopZRotation();
+
+    relaySubStreamHarnessGroup = new HarnessGroup( app, xPos, yPos, zPos, 0, 0, -200 );
+    relaySubStreamHarnessGroup.circularLayout( 75 );
+    relaySubStreamHarnessGroup.setRotationAnglesAndSpeeds( 180, 180, 0, 0.01, 0.005, 0 );
+    relaySubStreamHarnessGroup.startXRotation();
+    relaySubStreamHarnessGroup.startYRotation();
+    relaySubStreamHarnessGroup.stopZRotation();
+
+
     rtProcHarnesses   = new ArrayList<RTProcHarness>();
     cpuHarnesses      = new ArrayList<CpuHarness>();
     diskHarnesses     = new ArrayList<DiskHarness>();
     ktserverHarnesses = new ArrayList<KTServerHarness>();
+    relayStreamHarnesses = new ArrayList<RelayStreamHarness>();
+    relaySubStreamHarnesses = new ArrayList<RelaySubStreamHarness>();
 
     initializeFromConfig( source, thisNodeName );
 
     for ( CpuHarness ch : cpuHarnesses ) {
+      ch.setHarnessGroup( cpuHarnessGroup );
       cpuHarnessGroup.addHarness( ch );
     }
     for ( DiskHarness dh : diskHarnesses ) {
+      dh.setHarnessGroup( diskHarnessGroup );
+      dh.setCpuHarnessGroup( cpuHarnessGroup );
       diskHarnessGroup.addHarness( dh );
     }
     for ( RTProcHarness rh : rtProcHarnesses ) {
+      rh.setHarnessGroup( rtProcHarnessGroup );
+      rh.setCpuHarnessGroup( cpuHarnessGroup );
       rtProcHarnessGroup.addHarness( rh );
     }
     for ( KTServerHarness sh : ktserverHarnesses ) {
+      sh.setCpuHarnessGroup( cpuHarnessGroup );
+      sh.setHarnessGroup( ktserverHarnessGroup );
       ktserverHarnessGroup.addHarness( sh );
+    }
+    for ( RelayStreamHarness rs : relayStreamHarnesses ) {
+      rs.setCpuHarnessGroup( cpuHarnessGroup );
+      rs.setHarnessGroup( relayStreamHarnessGroup );
+      relayStreamHarnessGroup.addHarness( rs );
+    }
+    for ( RelaySubStreamHarness rs : relaySubStreamHarnesses ) {
+      rs.setCpuHarnessGroup( cpuHarnessGroup );
+      rs.setHarnessGroup( relaySubStreamHarnessGroup );
+      relaySubStreamHarnessGroup.addHarness( rs );
     }
 
     cpuUsage = cp5.addChart(thisNodeName+" cpu")
@@ -98,8 +139,12 @@ class RelayHarness {
       //cpuUsage.setColorValue( 100 + (i*25) );
       //cpuUsage.push(nh.node.nodeName, 100 - nh.node.idle );
     }
+    total_eps = 0;
+    for ( int i = 0; i < rtProcHarnesses.size(); i++ ) {
+      total_eps += rtProcHarnesses.get(i).rtProc.real_eps;
+    }
+    println( "Total eps for relay "+nodeName+" is "+total_eps );
   }
-
 
   void initializeFromConfig( String source, String thisNodeName ) {
     JSONObject cf = loadJSONObject(source);
@@ -124,11 +169,19 @@ class RelayHarness {
 
         // Create one RTProc per shard
         // Create one ktserver per shard
+        // Create one relayStream per shard
+        // Create one relaySubStream per shard
         for ( int highway = 0; highway < 4; highway++ ) {
           for ( int lane = 0; lane < 8; lane++ ) {
             String ID = highway+"-"+lane;
             RTProcHarness rh = RTProcHarness_findOrCreate( nodeName, ID );
             rtProcHarnesses.add( rh );
+
+            RelayStreamHarness rs = RelayStreamHarness_findOrCreate( nodeName, ID );
+            relayStreamHarnesses.add( rs );
+
+            RelaySubStreamHarness rss = RelaySubStreamHarness_findOrCreate( nodeName, ID );
+            relaySubStreamHarnesses.add( rss );
 
             KTServerHarness sh = KTServerHarness_findOrCreate( nodeName, ID );
             ktserverHarnesses.add( sh );
@@ -162,6 +215,7 @@ class RelayHarness {
     cpuHarnessGroup.draw();
     rtProcHarnessGroup.draw();
     ktserverHarnessGroup.draw();
+    relayStreamHarnessGroup.draw();
+    relaySubStreamHarnessGroup.draw();
   }
 }
-

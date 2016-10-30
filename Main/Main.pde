@@ -1,54 +1,61 @@
-  //Main part of the program, contains all global variables and setup() and draw()
+//Main part of the program, contains all global variables and setup() and draw()
 
-  import java.util.Iterator;
-  import controlP5.*;
-  ControlP5 cp5;
+import java.util.Iterator;
+import controlP5.*;
+ControlP5 cp5;
 
-  import websockets.*;
-  WebsocketClient gluster_wsc;
-  WebsocketClient relay_wsc;
+import websockets.*;
+WebsocketClient gluster_wsc;
+WebsocketClient relay_wsc;
+WebsocketClient redis_wsc;
 
-  import dawesometoolkit.*;
-  import org.multiply.processing.TimedEventGenerator;
+import dawesometoolkit.*;
+import org.multiply.processing.TimedEventGenerator;
 
-  import shapes3d.utils.*;
-  import shapes3d.animation.*;
-  import shapes3d.*;
+import shapes3d.utils.*;
+import shapes3d.animation.*;
+import shapes3d.*;
 
-  import queasycam.*;
+import queasycam.*;
 
-  import java.util.*;
-  import java.text.*;
-  boolean recording = false;
+import java.util.*;
+import java.text.*;
+boolean recording = false;
 
-  String configSource;
-  String gluster_configSource;
-  String gluster_dataSource;
-  String relay_configSource;
-  String relay_dataSource;
+String configSource;
+String gluster_configSource;
+String gluster_dataSource;
+String relay_configSource;
+String relay_dataSource;
+String redis_configSource;
+String redis_dataSource;
 
-  PrintWriter configFile;
-  PrintWriter dataFile;
+PrintWriter configFile;
+PrintWriter dataFile;
 
-  void startRecording() {
-    DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd:HH_mm_ss");
-    Date d = new Date();
-    String dateString = formatter.format(d);
-    String configFilename = dateString+"-config.json";
-    String dataFilename   = dateString+"-data.json";
+int telemetry_bytes_last_second = 0;
+int telemetry_bytes_this_second = 0;
+int telemetry_messages_last_second = 0;
+int telemetry_messages_this_second = 0;
+
+void startRecording() {
+  DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd:HH_mm_ss");
+  Date d = new Date();
+  String dateString = formatter.format(d);
+  String configFilename = dateString+"-config.json";
+  String dataFilename   = dateString+"-data.json";
 
 
-    configFile = createWriter(configFilename); 
-    String[] configText = loadStrings( configSource );
-    saveStrings( configFilename, configText );
+  configFile = createWriter(configFilename); 
+  String[] configText = loadStrings( configSource );
+  saveStrings( configFilename, configText );
 
-    dataFile   = createWriter(dataFilename); 
-    recording = true;
-  }
+  dataFile   = createWriter(dataFilename); 
+  recording = true;
+}
 
-  void stopRecording() {
-
-    if ( recording ) {
+void stopRecording() {
+  if ( recording ) {
     dataFile.flush();
     dataFile.close();
     recording = false;
@@ -60,16 +67,25 @@ CrazyCam cam;
 int mode = 3; // 2=2D, 3=3D
 boolean clicked = false;
 
+boolean spheresEnabled = true;
+float shinyVal = 1.0;
+boolean wireFrame = false;
+
 ArrayList<Harness> globalHarnesses = new ArrayList<Harness>();
 
 GlusterHarness  glusterHarness;
 RelayHarness    relayHarness_node001;
 RelayHarness    relayHarness_node004;
+RedisHarness    redisHarness_node01;
+RedisHarness    redisHarness_node02;
 KTServerHarness ktserverHarness;
 TimedEventGenerator tickerSecondTimedEventGenerator;
 PApplet app = this;
 Shape3D selectedShape;
 
+boolean glusterEnabled = true;
+boolean relayEnabled   = true;
+boolean redisEnabled   = true;
 boolean freezeEverything = false;
 boolean isClickable = false;
 boolean replay = false;
@@ -78,12 +94,14 @@ String replayDataFile   = "replay-data.json";
 String[] replayData;
 int    replayIndex = 0;
 int    replayTimestamp = 0;
+PMatrix3D originalMatrix;
 
 void setup() {
   //  if ( mode == 2 ) {
   //    size(1024, 1024);
   //  } else {
   size(1400, 1024, OPENGL);
+  background(0);
   smooth();
   //  }
   cam = new CrazyCam(this);
@@ -94,6 +112,7 @@ void setup() {
   cp5 = new ControlP5(this);
   colorMode(HSB, 300, 100, 100, 255);
 
+  originalMatrix = app.getMatrix((PMatrix3D)null);
   if ( replay ) {
     configSource = replayConfigFile;
     glusterHarness = new GlusterHarness( this, configSource, width/2, height/2, 0 );
@@ -101,20 +120,38 @@ void setup() {
     println( "Replaying "+replayData.length+" events" );
   } else {
     //configSource = "gluster.json";
-    gluster_configSource = "http://ec2-54-158-33-191.compute-1.amazonaws.com:3001/gluster";
-    gluster_dataSource = "ws://ec2-54-158-33-191.compute-1.amazonaws.com:3001/telemetry";
-    glusterHarness = new GlusterHarness( this, gluster_configSource, width/2, height/2, 0 );
-    gluster_wsc = new WebsocketClient(this, gluster_dataSource );
-    gluster_wsc.sendMessage("{\"action\":\"subscribe\",\"channel\":\"gluster\"}");
+    if ( glusterEnabled ) {
+      gluster_configSource = "http://ec2-54-158-33-191.compute-1.amazonaws.com:3001/gluster";
+      gluster_dataSource = "ws://ec2-54-158-33-191.compute-1.amazonaws.com:3001/telemetry";
+      glusterHarness = new GlusterHarness( this, gluster_configSource, width/2, height/2, 0 );
+      gluster_wsc = new WebsocketClient(this, gluster_dataSource );
+      gluster_wsc.sendMessage("{\"action\":\"subscribe\",\"channel\":\"gluster\"}");
+    }
     //===================================
 
-    //configSource = "relay.json";
-    relay_configSource = "http://ec2-54-158-33-191.compute-1.amazonaws.com:3001/relay";
-    relay_dataSource = "ws://ec2-54-158-33-191.compute-1.amazonaws.com:3001/telemetry";
-    relayHarness_node001 = new RelayHarness( this, relay_configSource, 400, 0, 0, "ev-relay-A-node001" );
-    relayHarness_node004 = new RelayHarness( this, relay_configSource, width - 400, 0, 0, "ev-relay-A-node004" );
-    relay_wsc = new WebsocketClient(this, relay_dataSource );
-    relay_wsc.sendMessage("{\"action\":\"subscribe\",\"channel\":\"relay\"}");
+    if ( relayEnabled ) {
+      //relay_configSource = "relay.json";
+      relay_configSource = "http://ec2-54-158-33-191.compute-1.amazonaws.com:3001/relay";
+      relay_dataSource = "ws://ec2-54-158-33-191.compute-1.amazonaws.com:3001/telemetry";
+      relayHarness_node001 = new RelayHarness( this, relay_configSource, 400, 0, 0, "ev-relay-A-node001" );
+      relayHarness_node004 = new RelayHarness( this, relay_configSource, width - 400, 0, 0, "ev-relay-A-node004" );
+      relay_wsc = new WebsocketClient(this, relay_dataSource );
+      relay_wsc.sendMessage("{\"action\":\"subscribe\",\"channel\":\"relay\"}");
+    }
+
+    if ( redisEnabled ) {
+      //configSource = "redis.json";
+      redis_configSource = "http://ec2-54-158-33-191.compute-1.amazonaws.com:3001/redis";
+      redis_dataSource = "ws://ec2-54-158-33-191.compute-1.amazonaws.com:3001/telemetry";
+      println( "initting redis-01" );
+      redisHarness_node01 = new RedisHarness( this, redis_configSource, 400, -400, 400, "ev-relay-A-redis-01" );
+      println( "done initting redis-01" );
+      //redisHarness_node01.redisHarnessInit( redis_configSource, "ev-relay-A-redis-01" );
+      redisHarness_node02 = new RedisHarness( this, redis_configSource, width - 400, -400, 400, "ev-relay-A-redis-02" );
+    //redisHarness_node02.redisHarnessInit( redis_configSource, "ev-relay-A-redis-02" );
+      redis_wsc = new WebsocketClient(this, redis_dataSource );
+      redis_wsc.sendMessage("{\"action\":\"subscribe\",\"channel\":\"redis\"}");
+    }
     
     //relayHarness = new RelayHarness( this, configSource, width/2, height/2, 0 );
     //relayHarness = new RelayHarness( this, configSource, width/2 + 150, height/2, 0 );
@@ -128,7 +165,7 @@ void setup() {
     rectMode(CORNER);
     frameRate(20);
   } else if ( mode == 3 ) {
-    frameRate(30);
+    frameRate(60);
     setup3D();
   }
 
@@ -170,11 +207,32 @@ void draw() {
 
 void mouseClicked() {
   clicked = true;
-  println("eye [center]: "+cam.center.x+","+cam.center.y+","+cam.center.z );
+  if ( cam.center != null ) {
+    println("eye [center]: "+cam.center.x+","+cam.center.y+","+cam.center.z );
+  }
 }
 
 public void keyPressed() {
-  if ( key == ' ' ) {
+  if ( key == '1' ) {
+    spheresEnabled ^= true;
+  } else if ( key == '2' ) {
+    wireFrame ^= true;
+    if ( wireFrame ) {
+      sphereDetail(10);
+    } else {
+      sphereDetail(30);
+    }
+  } else if ( key == '3' ) {
+    shinyVal += 0.05;
+    if ( shinyVal > 1.0 ) {
+      shinyVal = 1.0;
+    }
+  } else if ( key == '4' ) {
+    shinyVal -= 0.05;
+    if ( shinyVal < 0.0 ) {
+      shinyVal = 0.0;
+    }
+  } else if ( key == ' ' ) {
     freezeEverything = !freezeEverything;
 /*
     if ( isClickable ) {
@@ -196,6 +254,7 @@ public void keyPressed() {
 
 Harness selectedHarness;
 float selectedHarnessDistance = 1000000;
+float distance;
 
 void setup3D() {
   smooth();
@@ -206,7 +265,7 @@ Harness focalObject = null;
 
 void draw3D() {
   pointLight(0, 0, 100, 0, 0, 0 );
-  ambientLight(0, 0, 60);
+  ambientLight(0, 0, 40);
 
   if ( recording ) {
     background(255);
@@ -214,37 +273,54 @@ void draw3D() {
     background(0);
   }
 
-  if ( glusterHarness != null ) {
-    glusterHarness.draw3D();
-  }
-  if ( relayHarness_node001 != null ) {
-    relayHarness_node001.draw3D();
-  }
-  if ( relayHarness_node004 != null ) {
-    relayHarness_node004.draw3D();
+  if ( focalObject == null || !focalObject.isInside ) {
+    if ( glusterHarness != null ) {
+      glusterHarness.draw3D();
+    }
+    if ( relayHarness_node001 != null ) {
+      relayHarness_node001.draw3D();
+    }
+    if ( relayHarness_node004 != null ) {
+      relayHarness_node004.draw3D();
+    }
+
+    if ( redisHarness_node01 != null ) {
+      redisHarness_node01.draw3D();
+    }
+    if ( redisHarness_node02 != null ) {
+      redisHarness_node02.draw3D();
+    }
   }
 
   if ( cam.center != null ) {
     PVector closest = new PVector();
-    float distance = 10000000.0;
     float screenX = 0, screenY = 0;
     PVector np = new PVector();
     ArrayList<Harness>harnesses = new ArrayList<Harness>();
+    distance = 10000000.0;
 
-    for (Harness h : globalHarnesses ) {
-      h.isInside = false;
-      h.isLookedAt = false;
-      if ( (h.screenX >= (0+width/4) && h.screenX <= (width - width/4)) && (h.screenY >= (0+height/4) && h.screenY <= (height - height/4)) ) {
-        PVector p = h.pvector;
-        if ( p != null ) {
-          np.set( h.modelX, h.modelY, h.modelZ );
-          float thisdistance = np.dist( cam.center );
-          if ( thisdistance < distance ) {
-            distance = thisdistance;
-            focalObject = h;
-            closest = np.copy();
-            screenX = h.screenX;
-            screenY = h.screenY;
+    // Don't recalc focal object while inside target
+    if ( focalObject != null && focalObject.isInside ) {
+      // Do recalculate distance to determine if
+      // we're still inside the target.
+      np.set( focalObject.modelX, focalObject.modelY, focalObject.modelZ );
+      distance = np.dist( cam.center );
+    } else {
+      for (Harness h : globalHarnesses ) {
+        h.isInside = false;
+        h.isLookedAt = false;
+        if ((h.screenX >= (0+width/4) && h.screenX <= (width - width/4)) && (h.screenY >= (0+height/4) && h.screenY <= (height - height/4)) ) {
+          PVector p = h.pvector;
+          if ( p != null ) {
+            np.set( h.modelX, h.modelY, h.modelZ );
+            float thisdistance = np.dist( cam.center );
+            if ( thisdistance < distance ) {
+              distance = thisdistance;
+              focalObject = h;
+              closest = np.copy();
+              screenX = h.screenX;
+              screenY = h.screenY;
+            }
           }
         }
       }
@@ -252,15 +328,45 @@ void draw3D() {
     if ( distance < 500 ) {
       float radius = focalObject.calculateRadius();
       focalObject.isLookedAt = true;
-      if ( distance < radius ) {
+      if ( distance <= radius ) {
         focalObject.isInside = true;
+        noLights();
+        pointLight(0, 0, 100, cam.center.x, cam.center.y, cam.center.z );
+        spotLight(
+          100, 100, 100, // color
+          cam.center.x, cam.center.y, cam.center.z, // position
+          0, 0, 0,
+          PI/2, 2 ); // angle, concentration
+        ambientLight(0, 0, 60);
+        cam.friction = 0.1F;
       }
-      pushStyle();
-        stroke(100,100,100);
-        line(cam.center.x,cam.center.y,cam.center.z,closest.x,closest.y,closest.z);
-//        println("eye ["+distance+" "+inside+"] ("+radius+") ("+screenX+","+screenY+"): "+cam.center.x+","+cam.center.y+","+cam.center.z+" to "+closest.x+","+closest.y+","+closest.z );
-//        println( PVector.angleBetween(cam.center, closest) );
-      popStyle();
+      if ( distance > radius ) {
+        focalObject.isInside = false;
+        cam.friction = 0.75F;
+      }
+      if ( distance > (radius + 20) ) { // don't draw if inside (or near) target
+        pushStyle();
+          // draw line from screen center to target
+          stroke(300,100,100);
+          PVector p2 = rayTrace(cam.center.x, cam.center.y, cam.center.z, closest.x, closest.y, closest.z, radius);
+
+          // draw small sphere on the surface of the target
+          pushMatrix();
+            translate(p2.x,p2.y,p2.z);
+            fill(0,100,100);
+            sphere(1);
+          popMatrix();
+          // draw small sphere in the center of the HUD.
+          pushMatrix();
+            resetMatrix();
+            applyMatrix( originalMatrix );
+            translate(width/2,height/2);
+            fill(150,100,100);
+            sphere(1);
+          popMatrix();
+
+        popStyle();
+      }
       cam.beginHUD();
       focalObject.drawLabel();
       if ( focalObject.isInside ) {
@@ -270,10 +376,30 @@ void draw3D() {
     }
   }
 
-  gui();
+  drawMainHUD();
+  //gui();
 }
 
-
+void drawMainHUD() {
+  cam.beginHUD();
+  hint(DISABLE_DEPTH_TEST);
+  pushStyle();
+  lights();
+  fill( 150, 100, 100 );
+  String m = "Telemetry bytes/sec: "+telemetry_bytes_last_second+"\nTelemetry packets/sec: "+telemetry_messages_last_second+"\n";
+  m += "Relay 001 events/sec: "+relayHarness_node001.total_eps+"\n";
+  m += "Relay 004 events/sec: "+relayHarness_node004.total_eps+"\n";
+  if ( cam.center != null ) {
+    m += "Eye ["+cam.center.x+","+cam.center.y+","+cam.center.z+"]\n";
+    m += "Distance ["+distance+"]\n";
+  }
+  m += "Framerate ["+frameRate+"]\n";
+  text( m, width-300, 10, 300, 100 );
+  noLights();
+  popStyle();
+  hint(ENABLE_DEPTH_TEST);
+  cam.endHUD();
+}
 
 void draw2D() {
   //glusterHarness.draw2D();
@@ -285,11 +411,15 @@ void gui() {
   cam.beginHUD();
   cp5.draw();
   cam.endHUD();
+  noLights();
   hint(ENABLE_DEPTH_TEST);
 }
 
 void webSocketEvent(String msg) {
   JSONObject json = parseJSONObject(msg);
+
+  telemetry_bytes_this_second += msg.length();
+  telemetry_messages_this_second++;
 
   updateFromJSON( json );
   if ( recording ) {
@@ -357,12 +487,32 @@ void updateFromJSON( JSONObject json ) {
       String nodeName = json.getString( "host" );
       String shard = payload.getString( "shard" );
       RTProcHarness r = RTProcHarness_findOrCreate( nodeName, shard );
-      r.rtProc.updatedMillis = millis();
+      int millis = millis();
+
+      println( "r.rtProc.events["+nodeName+":"+shard+"] is "+r.rtProc.events );
+      println( "r.rtProc.delta_events["+nodeName+":"+shard+"] is "+r.rtProc.delta_events );
+      println( "r.rtProc.updatedMillis["+nodeName+":"+shard+"] is "+r.rtProc.updatedMillis );
+      println( "r.rtProc.event_counts_updated_at["+nodeName+":"+shard+"] is "+r.rtProc.event_counts_updated_at );
+
+      int current_eps    = payload.getInt( "eps" );
+      int current_events = payload.getInt( "events" );
+      r.rtProc.delta_events = current_events - r.rtProc.events;
+
+      println( "Delta events for "+nodeName+":"+shard+" is "+r.rtProc.delta_events+"; current events is "+current_events+", prev events is "+r.rtProc.events );
+      if ( r.rtProc.event_counts_updated_at == 0 ) {
+        r.rtProc.real_eps = current_eps; // use instantaneous value while calibrating
+      } else {
+        int delta_millis = millis - r.rtProc.event_counts_updated_at;
+        r.rtProc.real_eps = (int)(r.rtProc.delta_events / (delta_millis /1000.0));
+      }
+      r.rtProc.updatedMillis = millis;
+      r.rtProc.event_counts_updated_at = millis;
 
       r.rtProc.clients          = payload.getInt( "clients" );
-      r.rtProc.events           = payload.getInt( "events" );
+      r.rtProc.eps              = current_eps;
+      r.rtProc.events           = current_events;
+      println( "setting r.rtProc.events["+nodeName+":"+shard+"] to "+r.rtProc.events );
       r.rtProc.invalid_keys     = payload.getInt( "invalid_keys" );
-      r.rtProc.eps              = payload.getInt( "eps" );
       r.rtProc.user_state_qps   = payload.getInt( "user_state_qps" );
       r.rtProc.user_var_qps     = payload.getInt( "user_var_qps" );
       r.rtProc.beta_reads       = payload.getInt( "beta_reads" );
@@ -370,11 +520,6 @@ void updateFromJSON( JSONObject json ) {
       r.rtProc.gamma_misses     = payload.getInt( "gamma_misses" );
       r.rtProc.gamma_collisions = payload.getInt( "gamma_collisions" );
       r.rtProc.jitter           = payload.getFloat( "jitter" );
-
-      r.startRxIndicator();
-      r.startUsTxIndicator();
-      r.startUvTxIndicator();
-
     } else if ( type.equals("evRTProc-bgsave-start") ) {
       JSONObject payload = json.getJSONObject( "payload" );
       String nodeName = json.getString( "host" );
@@ -443,7 +588,7 @@ void updateFromJSON( JSONObject json ) {
       } else if ( db.equals( "user-attributes" ) ) {
         r.rtProc.flushed_records_user_attributes = payload.getInt( "records" );
       }
-    } else if ( type.equals("evRelay-pidstat-cpu") ) {
+    } else if ( type.equals("evRelay-pidstat-cpu") || type.equals("redis-pidstat-cpu") ) {
       JSONObject payload = json.getJSONObject( "payload" );
       String nodeName = json.getString( "host" );
       String shard = payload.getString( "shard" );
@@ -451,10 +596,24 @@ void updateFromJSON( JSONObject json ) {
       Process p = null;
       if ( task.equals("evRTProc") ) {
         RTProcHarness h = RTProcHarness_findOrCreate( nodeName, shard );
-        p = (Process)h.rtProc;
+        p = h.process;
+        h.process.updatedMillis = millis();
       } else if ( task.equals("ktserver") ) {
         KTServerHarness h = KTServerHarness_findOrCreate( nodeName, shard );
-        p = (Process)h.ktserver;
+        p = h.process;
+        h.process.updatedMillis = millis();
+      } else if ( task.equals("evRelayStream") ) {
+        RelayStreamHarness h = RelayStreamHarness_findOrCreate( nodeName, shard );
+        p = h.process;
+        h.process.updatedMillis = millis();
+      } else if ( task.equals("evRelaySubStream") ) {
+        RelaySubStreamHarness h = RelaySubStreamHarness_findOrCreate( nodeName, shard );
+        p = h.process;
+        h.process.updatedMillis = millis();
+      } else if ( task.equals("redis") ) {
+        RedisProcHarness h = RedisProcHarness_findOrCreate( nodeName, shard );
+        p = h.process;
+        h.process.updatedMillis = millis();
       }
       if ( p != null ) {
         p.num_fds = payload.getInt("num_fds");
@@ -464,7 +623,7 @@ void updateFromJSON( JSONObject json ) {
         p.system   = payload.getFloat("system");
         p.pid      = payload.getInt("pid");
       }
-    } else if ( type.equals("evRelay-pidstat-io") ) {
+    } else if ( type.equals("evRelay-pidstat-io") || type.equals("redis-pidstat-io") ) {
       JSONObject payload = json.getJSONObject( "payload" );
       String nodeName = json.getString( "host" );
       String shard = payload.getString( "shard" );
@@ -472,10 +631,19 @@ void updateFromJSON( JSONObject json ) {
       Process p = null;
       if ( task.equals("evRTProc") ) {
         RTProcHarness h = RTProcHarness_findOrCreate( nodeName, shard );
-        p = (Process)h.rtProc;
+        p = h.process;
       } else if ( task.equals("ktserver") ) {
         KTServerHarness h = KTServerHarness_findOrCreate( nodeName, shard );
-        p = (Process)h.ktserver;
+        p = h.process;
+      } else if ( task.equals("evRelayStream") ) {
+        RelayStreamHarness h = RelayStreamHarness_findOrCreate( nodeName, shard );
+        p = h.process;
+      } else if ( task.equals("evRelaySubStream") ) {
+        RelaySubStreamHarness h = RelaySubStreamHarness_findOrCreate( nodeName, shard );
+        p = h.process;
+      } else if ( task.equals("redis") ) {
+        RedisProcHarness h = RedisProcHarness_findOrCreate( nodeName, shard );
+        p = h.process;
       }
       if ( p != null ) {
         p.kb_rds = payload.getFloat("kb_rds");
@@ -537,6 +705,11 @@ void onTimerEvent() {
 
 void tickerSecond( int lastMillis, int curMillis ) {
 
+  telemetry_bytes_last_second = telemetry_bytes_this_second;
+  telemetry_bytes_this_second = 0;
+  telemetry_messages_last_second = telemetry_messages_this_second;
+  telemetry_messages_this_second = 0;
+
   if ( replay ) {
     replayEvents();
   }
@@ -597,21 +770,40 @@ void resetIdleRelayStats( int lastMillis, int curMillis ) {
 }
 
 PVector rayTrace(float x0, float y0, float z0, float x1, float y1, float z1, float radius) {
- PVector p = new PVector();
- float discriminant, t, lineX, lineY, lineZ;
- float dx = x1 - x0, dy = y1 - y0, dz = z1 - z0;
- float a = dx*dx + dy*dy + dz*dz;
- float b = 2*dx*(x0-x1) + 2*dy*(y0-y1) + 2*dz*(z0-z1);
- float c = x1*x1 + y1*y1 + z1*z1 + x0*x0 + y0*y0 + z0*z0 - 2*(x1*x0 + y1*y0 + z1*z0) - radius*radius;
- discriminant = b*b - 4*a*c;
- t = ( -b - sqrt(discriminant) ) / (2*a);
- lineX = x0 + t*dx;
- lineY = y0 + t*dy;
- lineZ = z0 + t*dz;
- line(x0, y0, z0, lineX, lineY, lineZ);
- p.x = lineX;
- p.y = lineY;
- p.z = lineZ;
- return p;
+  PVector p = new PVector();
+  float discriminant, t, lineX, lineY, lineZ;
+  float dx = x1 - x0, dy = y1 - y0, dz = z1 - z0;
+  float a = dx*dx + dy*dy + dz*dz;
+  float b = 2*dx*(x0-x1) + 2*dy*(y0-y1) + 2*dz*(z0-z1);
+  float c = x1*x1 + y1*y1 + z1*z1 + x0*x0 + y0*y0 + z0*z0 - 2*(x1*x0 + y1*y0 + z1*z0) - radius*radius;
 
+  discriminant = b*b - 4*a*c;
+  t = ( -b - sqrt(discriminant) ) / (2*a);
+  lineX = x0 + t*dx;
+  lineY = y0 + t*dy;
+  lineZ = z0 + t*dz;
+
+  line(x0, y0, z0, lineX, lineY, lineZ);
+
+  p.x = lineX;
+  p.y = lineY;
+  p.z = lineZ;
+
+  return p;
+}
+
+
+public ArrayList<PVector> helix(float zIncrement, float increment, int numItems, float radius) {
+  float x = 0, y = 0, z = 0, inc = 0;
+  ArrayList<PVector> locations = new ArrayList<PVector>();
+
+  for(int i = 0; i < numItems; i++) {
+    x = radius * cos(radians(inc));
+    y = radius * sin(radians(inc));
+    inc += increment;
+    z += zIncrement;
+    PVector p = new PVector(x, y, z);
+    locations.add(p);
+  }
+  return locations;
 }

@@ -4,6 +4,7 @@ RTProc RTProc_findOrCreate( String nodeName, String ID ) {
   RTProc r = (RTProc)rtprocs.get( rtProcID );
   if ( r == null ) {
     r = new RTProc( nodeName, rtProcID );
+println( "created RTProc for ["+rtProcID+"]" );
     rtprocs.put( rtProcID, r );
   }
   return r;
@@ -37,8 +38,10 @@ class RTProc extends Process {
   // updated with evRTProc-stat:
   public int clients;
   public int events;
+  public int delta_events;
   public int invalid_keys;
   public int eps;
+  public int real_eps;
   public int user_state_qps;
   public int user_var_qps;
   public int beta_reads;
@@ -57,15 +60,11 @@ class RTProc extends Process {
   RelayNode relayNode;
 
   public int updatedMillis;
+  public int event_counts_updated_at;
 
   RTProc( String _nodeName, String _ID ) {
     relayNode = RelayNode_findOrCreate( _nodeName );
     ID = _ID;
-    events = 0;
-    cpuUsage = 0;
-    ramUsage = 0;
-    state = "unknown";
-    updatedMillis = 0;
   }
 }
 

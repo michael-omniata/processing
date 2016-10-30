@@ -11,4 +11,6 @@ class Process {
   public float kb_wrs;
   public float kb_rds;
   public float kb_ccwr;
+
+  public int updatedMillis;
 }

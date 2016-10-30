@@ -1,3 +1,5 @@
+boolean ringsEnabled = true;
+
 class Ring {
   public float frequency;
   float outside_radius;
@@ -25,6 +27,9 @@ class Ring {
   }
 
   void draw( float targetFrequency ) {
+    if ( ringsEnabled == false ) {
+      return;
+    }
     pushStyle();
       pushMatrix();
 

@@ -37,11 +37,4 @@ class CpuHarness extends Harness {
     //return(radius * (1 + (cpu.iowait/100.0)));
     return( radius );
   }
-
-  /*
-  void draw3D() {
-    fill(calculateHue(), calculateBrightness(), calculateSaturation());
-    sphere(radius);
-  }
-  */
 }
