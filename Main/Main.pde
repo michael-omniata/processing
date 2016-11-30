@@ -8,6 +8,8 @@ import websockets.*;
 WebsocketClient gluster_wsc;
 WebsocketClient relay_wsc;
 WebsocketClient redis_wsc;
+WebsocketClient capi_wsc;
+WebsocketClient bank_wsc;
 
 import dawesometoolkit.*;
 import org.multiply.processing.TimedEventGenerator;
@@ -29,6 +31,10 @@ String relay_configSource;
 String relay_dataSource;
 String redis_configSource;
 String redis_dataSource;
+String capi_configSource;
+String capi_dataSource;
+String bank_configSource;
+String bank_dataSource;
 
 PrintWriter configFile;
 PrintWriter dataFile;
@@ -73,6 +79,8 @@ boolean wireFrame = false;
 
 ArrayList<Harness> globalHarnesses = new ArrayList<Harness>();
 
+//CapiHarness     capiHarness;
+//BankHarness     bankHarness;
 GlusterHarness  glusterHarness;
 RelayHarness    relayHarness_node001;
 RelayHarness    relayHarness_node004;
@@ -86,6 +94,9 @@ Shape3D selectedShape;
 boolean glusterEnabled = true;
 boolean relayEnabled   = true;
 boolean redisEnabled   = true;
+boolean bankEnabled    = false;
+boolean capiEnabled    = false;
+
 boolean freezeEverything = false;
 boolean isClickable = false;
 boolean replay = false;
@@ -152,6 +163,23 @@ void setup() {
       redis_wsc = new WebsocketClient(this, redis_dataSource );
       redis_wsc.sendMessage("{\"action\":\"subscribe\",\"channel\":\"redis\"}");
     }
+
+/*
+    if ( bankEnabled ) {
+      bank_configSource = "http://ec2-54-158-33-191.compute-1.amazonaws.com:3001/capi/banks";
+      bank_dataSource = "ws://ec2-54-158-33-191.compute-1.amazonaws.com:3001/telemetry";
+      bankHarness = new BankHarness( this, bank_configSource, width/2, height/2, 300 );
+      bank_wsc = new WebsocketClient(this, bank_dataSource );
+      bank_wsc.sendMessage("{\"action\":\"subscribe\",\"channel\":\"capi\"}");
+    }
+    if ( capiEnabled ) {
+      capi_configSource = "http://ec2-54-158-33-191.compute-1.amazonaws.com:3001/capi/servers";
+      capi_dataSource = "ws://ec2-54-158-33-191.compute-1.amazonaws.com:3001/telemetry";
+      capiHarness = new CapiHarness( this, capi_configSource, width/2, height/2, 0 );
+      capi_wsc = new WebsocketClient(this, capi_dataSource );
+      capi_wsc.sendMessage("{\"action\":\"subscribe\",\"channel\":\"capi\"}");
+    }
+*/
     
     //relayHarness = new RelayHarness( this, configSource, width/2, height/2, 0 );
     //relayHarness = new RelayHarness( this, configSource, width/2 + 150, height/2, 0 );
@@ -165,7 +193,7 @@ void setup() {
     rectMode(CORNER);
     frameRate(20);
   } else if ( mode == 3 ) {
-    frameRate(60);
+    //frameRate(60);
     setup3D();
   }
 
@@ -313,9 +341,9 @@ void draw3D() {
           PVector p = h.pvector;
           if ( p != null ) {
             np.set( h.modelX, h.modelY, h.modelZ );
-            float thisdistance = np.dist( cam.center );
-            if ( thisdistance < distance ) {
-              distance = thisdistance;
+            h.distance = np.dist( cam.center );
+            if ( h.distance < distance ) {
+              distance = h.distance;
               focalObject = h;
               closest = np.copy();
               screenX = h.screenX;
@@ -387,8 +415,10 @@ void drawMainHUD() {
   lights();
   fill( 150, 100, 100 );
   String m = "Telemetry bytes/sec: "+telemetry_bytes_last_second+"\nTelemetry packets/sec: "+telemetry_messages_last_second+"\n";
-  m += "Relay 001 events/sec: "+relayHarness_node001.total_eps+"\n";
-  m += "Relay 004 events/sec: "+relayHarness_node004.total_eps+"\n";
+  if ( relayEnabled ) {
+    m += "Relay 001 events/sec: "+relayHarness_node001.total_eps+"\n";
+    m += "Relay 004 events/sec: "+relayHarness_node004.total_eps+"\n";
+  }
   if ( cam.center != null ) {
     m += "Eye ["+cam.center.x+","+cam.center.y+","+cam.center.z+"]\n";
     m += "Distance ["+distance+"]\n";

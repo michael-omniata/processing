@@ -5,6 +5,7 @@ import shapes3d.*;
 
 class Harness {
   float xPos, yPos, zPos;
+  float distance;
   float modelX, modelY, modelZ;
   float screenX, screenY;
   public float radius;
@@ -207,6 +208,21 @@ class Harness {
       }
       if ( spheresEnabled ) {
         shininess(shinyVal);
+        if ( distance > 1500 ) {
+          sphereDetail( 5 );
+        } else if ( distance > 1100 ) {
+          sphereDetail( 8 );
+        } else if ( distance > 900 ) {
+          sphereDetail( 10 );
+        } else if ( distance > 700 ) {
+          sphereDetail( 15 );
+        } else if ( distance > 400 ) {
+          sphereDetail( 20 );
+        } else if ( distance > 200 ) {
+          sphereDetail( 25 );
+        } else {
+          sphereDetail( 30 );
+        }
         sphere(calculateRadius());
       }
     }

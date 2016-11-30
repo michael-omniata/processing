@@ -5,7 +5,6 @@ ProcHarness ProcHarness_findOrCreate( String nodeName, String ID ) {
   ProcHarness p = (ProcHarness)procHarnesses.get( procID );
   if ( p == null ) {
     p = new ProcHarness( nodeName, ID );
-println( "created ProcHarness for "+procID );
     procHarnesses.put( procID, p );
   }
   return p;
