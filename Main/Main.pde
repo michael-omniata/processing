@@ -5,6 +5,8 @@ import controlP5.*;
 ControlP5 cp5;
 
 import websockets.*;
+WebsocketClient telemetry_wsc;
+
 WebsocketClient gluster_wsc;
 WebsocketClient relay_wsc;
 WebsocketClient redis_wsc;
@@ -130,12 +132,15 @@ void setup() {
     replayData = loadStrings(replayDataFile);
     println( "Replaying "+replayData.length+" events" );
   } else {
+    telemetry_wsc = new WebsocketClient(this, "ws://ec2-54-158-33-191.compute-1.amazonaws.com:3001/telemetry" );
+
     //configSource = "gluster.json";
     if ( glusterEnabled ) {
       gluster_configSource = "http://ec2-54-158-33-191.compute-1.amazonaws.com:3001/gluster";
       gluster_dataSource = "ws://ec2-54-158-33-191.compute-1.amazonaws.com:3001/telemetry";
       glusterHarness = new GlusterHarness( this, gluster_configSource, width/2, height/2, 0 );
-      gluster_wsc = new WebsocketClient(this, gluster_dataSource );
+      //gluster_wsc = new WebsocketClient(this, gluster_dataSource );
+      gluster_wsc = telemetry_wsc;
       gluster_wsc.sendMessage("{\"action\":\"subscribe\",\"channel\":\"gluster\"}");
     }
     //===================================
@@ -146,7 +151,8 @@ void setup() {
       relay_dataSource = "ws://ec2-54-158-33-191.compute-1.amazonaws.com:3001/telemetry";
       relayHarness_node001 = new RelayHarness( this, relay_configSource, 400, 0, 0, "ev-relay-A-node001" );
       relayHarness_node004 = new RelayHarness( this, relay_configSource, width - 400, 0, 0, "ev-relay-A-node004" );
-      relay_wsc = new WebsocketClient(this, relay_dataSource );
+      //relay_wsc = new WebsocketClient(this, relay_dataSource );
+      relay_wsc = telemetry_wsc;
       relay_wsc.sendMessage("{\"action\":\"subscribe\",\"channel\":\"relay\"}");
     }
 
@@ -160,7 +166,8 @@ void setup() {
       //redisHarness_node01.redisHarnessInit( redis_configSource, "ev-relay-A-redis-01" );
       redisHarness_node02 = new RedisHarness( this, redis_configSource, width - 400, -400, 400, "ev-relay-A-redis-02" );
     //redisHarness_node02.redisHarnessInit( redis_configSource, "ev-relay-A-redis-02" );
-      redis_wsc = new WebsocketClient(this, redis_dataSource );
+      //redis_wsc = new WebsocketClient(this, redis_dataSource );
+      redis_wsc = telemetry_wsc;
       redis_wsc.sendMessage("{\"action\":\"subscribe\",\"channel\":\"redis\"}");
     }
 
@@ -724,6 +731,8 @@ void updateFromJSON( JSONObject json ) {
   }
 }
 
+int heartbeat_counter = 0;
+
 int lastMillis = 0;
 void onTimerEvent() {
   int curMillis = millis();
@@ -742,6 +751,15 @@ void tickerSecond( int lastMillis, int curMillis ) {
 
   if ( replay ) {
     replayEvents();
+  }
+
+  if ( telemetry_wsc != null ) {
+    // Keep the channel alive
+    heartbeat_counter++;
+    if ( heartbeat_counter > 5 ) {
+      heartbeat_counter = 0;
+      telemetry_wsc.sendMessage("{\"action\":\"heartbeat\"}");
+    }
   }
 
   resetIdleDiskStats( lastMillis, curMillis );
