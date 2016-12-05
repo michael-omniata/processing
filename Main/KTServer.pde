@@ -1,3 +1,5 @@
+//Kyoto Tycoon server class (KTServer) is a key value database
+
 HashMap ktservers = new HashMap();
 KTServer KTServer_findOrCreate( String nodeName, String ID ) {
   String ktServerID = nodeName+':'+ID;

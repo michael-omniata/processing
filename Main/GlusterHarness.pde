@@ -1,4 +1,4 @@
-
+//GlusterHarness class contains GUI for the overall system of nodes, bricks, and volumes
 
 class GlusterHarness {
   public float xPos;
@@ -181,4 +181,3 @@ class GlusterHarness {
     popMatrix();
   }
 }
-

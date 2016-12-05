@@ -1,3 +1,5 @@
+//the GlusterVolumeHarness contains the GUI for Volumes
+
 HashMap glusterVolumeHarnesses = new HashMap();
 GlusterVolumeHarness GlusterVolumeHarness_findOrCreate( String volumeName ) {
   GlusterVolumeHarness vh = (GlusterVolumeHarness)glusterVolumeHarnesses.get( volumeName );
@@ -45,4 +47,3 @@ class GlusterVolumeHarness extends Harness {
     }
   }
 }
-

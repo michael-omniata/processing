@@ -1,5 +1,6 @@
 //The GlusterBrick class, contains the status, capacity, usage, and name of a brick
 //
+//SAMPLE DATA:
 //written: 181382761133,
 //volume: "gv2",
 //status: 1,

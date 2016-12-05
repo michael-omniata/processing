@@ -1,4 +1,4 @@
-//The BrickHarness class is the GUI for a Brick, attributes can be adjusted through ControlP5 for testing
+//The DiskHarness class is the GUI for a Disk, attributes can be adjusted through ControlP5 for testing
 
 HashMap diskHarnesses = new HashMap();
 DiskHarness DiskHarness_findOrCreate( String nodeName, String deviceName ) {
@@ -98,4 +98,3 @@ class DiskHarness extends Harness {
     popStyle();
   }
 }
-

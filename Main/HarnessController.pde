@@ -1,3 +1,5 @@
+//the harness controller lets you associate a CP5 widget with a harness
+
 class HarnessController {
   public Controller c;
   float xOffset, yOffset;

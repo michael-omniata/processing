@@ -1,3 +1,5 @@
+//modification of the queazy cam library. Used to create and move the camera in 3D space
+
 import java.awt.*; 
 import java.awt.Robot;
 import java.util.HashMap;

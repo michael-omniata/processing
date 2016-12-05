@@ -1,3 +1,4 @@
+//KTServerHarness contains the GUI for KTServer objects
 
 HashMap ktserverHarnesses = new HashMap();
 KTServerHarness KTServerHarness_findOrCreate( String nodeName, String ID ) {

@@ -1,3 +1,5 @@
+//the HarnessGroup class contains and defines the shape of a group of other harnesses, like bricks or nodes
+
 class HarnessGroup extends Harness {
   public ArrayList<Harness> harnesses;
   public boolean rotationEnabled;

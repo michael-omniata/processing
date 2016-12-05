@@ -1,3 +1,4 @@
+//the cpu harness contains the attributes for visual representation of a cpu
 
 HashMap cpuHarnesses = new HashMap();
 CpuHarness CpuHarness_findOrCreate( String nodeName, String ID ) {

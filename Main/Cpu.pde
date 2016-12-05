@@ -1,4 +1,6 @@
 HashMap cpus = new HashMap();
+
+//finds a CPU, or creates a new one if no CPU is found with the given node name and ID
 Cpu Cpu_findOrCreate( String nodeName, String ID ) {
   String cpuID = nodeName+':'+ID;
   Cpu c = (Cpu)cpus.get( cpuID );
@@ -25,4 +27,3 @@ class Cpu {
     ID = _ID;
   }
 }
-

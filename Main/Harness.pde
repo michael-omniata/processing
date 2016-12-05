@@ -1,4 +1,6 @@
-//Harness is the Superclass for all other harness classes 
+//Harness is the Superclass for all other harness classes, each of which represents the GUI for the respective object
+//Objects (such as bricks, volumes, and nodes) can be mounted to a harness, which contains the information to represent the object
+
 import shapes3d.utils.*;
 import shapes3d.animation.*;
 import shapes3d.*;
@@ -268,4 +270,3 @@ class Harness {
     popStyle();
   }
 }
-
