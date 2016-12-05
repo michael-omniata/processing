@@ -1,4 +1,4 @@
-class SystemHarness {
+class SystemHarness extends Harness {
   public ArrayList<CpuHarness>       cpuHarnesses;
   public ArrayList<DiskHarness>      diskHarnesses;
   float xPos;

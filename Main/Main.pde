@@ -1,4 +1,71 @@
-//Main part of the program, contains all global variables and setup() and draw()
+//
+// This program is used to perform real-time visualization of the Omniata data analytics
+// engine. Currently, the major parts of the system that are visualized are:
+//
+//   The gluster filesystem, which is a distributed filesystem consisting of four
+//   processing "nodes" and about 60 "bricks", each of which are 1TB. Gluster volumes
+//   are abstract groups of "bricks", and can be created using bricks from multiple
+//   nodes.
+//
+//   The event relays (two active and redundant), which receive events and process
+//   them in real-time, keeping track of user state, which is persisted to disk. The
+//   relays use KTservers (persistent key/value database) to periodically flush
+//   cached state to disk. RelayStream and RelaySubStream processes allow the event
+//   stream to be sampled, in whole or in part.
+//
+//   The redis servers (two, in a master/slave configuration).
+//
+// The source of data for the visualization comes from a telemetry server, which
+// is used to allow publishers to disseminate telemetry to subscribers. The telemetry
+// events are in JSON format, and are transmitted over a web socket.
+//
+//
+// This is the class structure:
+//
+// Disk
+// Cpu
+// Node
+// Process
+//   KTServer
+//   RTProc
+//   Proc
+//   RedisProc
+//   RelayStream
+//   RelaySubStream
+// RedisNode
+// RelayNode
+// GlusterBrick [ GlusterNode, Disk ]
+// GlusterVolume [ GlusterBrick[] ]
+// GlusterNode [ GlusterBrick[] ]
+// WorkerNode [ Node ]
+// Harness [ HarnessController[] ]
+//   CpuHarness [ NodeHarness, Cpu ]
+//   DiskHarness [ NodeHarness, 
+//   GlusterBrickHarness [ GlusterNode, GlusterBrick, GlusterVolume]
+//   GlusterNodeHarness [ GlusterNode, GlusterBrick[] ] 
+//   GlusterVolumeHarness [ GlusterVolume ]
+//   HarnessGroup [ Harnesses[] ]
+//     ProcHarnessGroup
+//     RTProcHarnessGroup
+//   NodeHarness [ CpuHarness[], DiskHarness[] ]
+//   ProcessHarness [ NodeHarness, HarnessGroup, Process ]
+//     ProcHarness [ NodeHarness, Proc ]
+//     RTProcHarness [ NodeHarness, RelayHarness, RTProc ]
+//     KTServerHarness [ NodeHarness, RelayHarness, KTServer ]
+//     RedisProcHarness [ NodeHarness, RelayHarness, RedisProc ]
+//     RelayStreamHarness [ NodeHarness, RelayHarness, RelayStream ]
+//     RelaySubStreamHarness [ NodeHarness, RelayHarness, RelaySubStream ]
+//   RedisNodeHarness [ NodeHarness, RedisNode ]
+//   RelayNodeHarness [ NodeHaresss, RelayNode ] 
+//   WorkerNodeHarness [ NodeHarness, WorkerNode ]
+//   SystemHarness
+//     RedisHarness [ RedisProcHarnessGroup, RedisProcHarness[] ]
+//     WorkerHarness [ ProcHarnessGroup, ProcHarness[] ]
+//
+// Authors: Mischa and Michael Thompson
+// Copyright (c) 2016, Omniata INC.
+//
+//
 
 import java.util.Iterator;
 import controlP5.*;
@@ -113,6 +180,11 @@ void setup() {
   //  if ( mode == 2 ) {
   //    size(1024, 1024);
   //  } else {
+
+  JSONObject json = loadJSONObject("config.json");
+  // Get the FQDN and port number of the telemetry endpoint
+  String telemetryEndpoint = json.getString("telemetryEndpoint");
+
   size(1400, 1024, OPENGL);
   background(0);
   smooth();
@@ -132,14 +204,12 @@ void setup() {
     replayData = loadStrings(replayDataFile);
     println( "Replaying "+replayData.length+" events" );
   } else {
-    telemetry_wsc = new WebsocketClient(this, "ws://ec2-54-158-33-191.compute-1.amazonaws.com:3001/telemetry" );
+    telemetry_wsc = new WebsocketClient(this, "ws://"+telemetryEndpoint+"/telemetry" );
 
     //configSource = "gluster.json";
     if ( glusterEnabled ) {
-      gluster_configSource = "http://ec2-54-158-33-191.compute-1.amazonaws.com:3001/gluster";
-      gluster_dataSource = "ws://ec2-54-158-33-191.compute-1.amazonaws.com:3001/telemetry";
+      gluster_configSource = "http://"+telemetryEndpoint+"/gluster";
       glusterHarness = new GlusterHarness( this, gluster_configSource, width/2, height/2, 0 );
-      //gluster_wsc = new WebsocketClient(this, gluster_dataSource );
       gluster_wsc = telemetry_wsc;
       gluster_wsc.sendMessage("{\"action\":\"subscribe\",\"channel\":\"gluster\"}");
     }
@@ -147,51 +217,36 @@ void setup() {
 
     if ( relayEnabled ) {
       //relay_configSource = "relay.json";
-      relay_configSource = "http://ec2-54-158-33-191.compute-1.amazonaws.com:3001/relay";
-      relay_dataSource = "ws://ec2-54-158-33-191.compute-1.amazonaws.com:3001/telemetry";
+      relay_configSource = "http://"+telemetryEndpoint+"/relay";
       relayHarness_node001 = new RelayHarness( this, relay_configSource, 400, 0, 0, "ev-relay-A-node001" );
       relayHarness_node004 = new RelayHarness( this, relay_configSource, width - 400, 0, 0, "ev-relay-A-node004" );
-      //relay_wsc = new WebsocketClient(this, relay_dataSource );
       relay_wsc = telemetry_wsc;
       relay_wsc.sendMessage("{\"action\":\"subscribe\",\"channel\":\"relay\"}");
     }
 
     if ( redisEnabled ) {
       //configSource = "redis.json";
-      redis_configSource = "http://ec2-54-158-33-191.compute-1.amazonaws.com:3001/redis";
-      redis_dataSource = "ws://ec2-54-158-33-191.compute-1.amazonaws.com:3001/telemetry";
-      println( "initting redis-01" );
+      redis_configSource = "http://"+telemetryEndpoint+"/redis";
       redisHarness_node01 = new RedisHarness( this, redis_configSource, 400, -400, 400, "ev-relay-A-redis-01" );
-      println( "done initting redis-01" );
-      //redisHarness_node01.redisHarnessInit( redis_configSource, "ev-relay-A-redis-01" );
       redisHarness_node02 = new RedisHarness( this, redis_configSource, width - 400, -400, 400, "ev-relay-A-redis-02" );
-    //redisHarness_node02.redisHarnessInit( redis_configSource, "ev-relay-A-redis-02" );
-      //redis_wsc = new WebsocketClient(this, redis_dataSource );
       redis_wsc = telemetry_wsc;
       redis_wsc.sendMessage("{\"action\":\"subscribe\",\"channel\":\"redis\"}");
     }
 
 /*
     if ( bankEnabled ) {
-      bank_configSource = "http://ec2-54-158-33-191.compute-1.amazonaws.com:3001/capi/banks";
-      bank_dataSource = "ws://ec2-54-158-33-191.compute-1.amazonaws.com:3001/telemetry";
+      bank_configSource = "http://"+telemetryEndpoint+"/capi/banks";
       bankHarness = new BankHarness( this, bank_configSource, width/2, height/2, 300 );
-      bank_wsc = new WebsocketClient(this, bank_dataSource );
+      bank_wsc = telemetry_wsc;
       bank_wsc.sendMessage("{\"action\":\"subscribe\",\"channel\":\"capi\"}");
     }
     if ( capiEnabled ) {
-      capi_configSource = "http://ec2-54-158-33-191.compute-1.amazonaws.com:3001/capi/servers";
-      capi_dataSource = "ws://ec2-54-158-33-191.compute-1.amazonaws.com:3001/telemetry";
+      capi_configSource = "http://"+telemetryEndpoint+"/capi/servers";
       capiHarness = new CapiHarness( this, capi_configSource, width/2, height/2, 0 );
-      capi_wsc = new WebsocketClient(this, capi_dataSource );
+      capi_wsc = telemetry_wsc;
       capi_wsc.sendMessage("{\"action\":\"subscribe\",\"channel\":\"capi\"}");
     }
 */
-    
-    //relayHarness = new RelayHarness( this, configSource, width/2, height/2, 0 );
-    //relayHarness = new RelayHarness( this, configSource, width/2 + 150, height/2, 0 );
-    //relayHarness_1 = new RelayHarness( this, configSource, width/2 - 150, height/2, 0 );
-    //glusterHarness = new GlusterHarness( this, configSource );
   }
 
   if ( mode == 2 ) {

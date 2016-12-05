@@ -16,13 +16,16 @@ class RelaySubStreamHarness extends ProcessHarness {
   public static final int DEFAULT_ACTIVITY_INDICATOR_HUE = 0;
   public RelaySubStream relaySubStream;
   public RelayHarness relayHarness;
+  public NodeHarness nodeHarnessContainer;
   public float radius = DEFAULT_RADIUS;
   Ring wrsRing;
 
   RelaySubStreamHarness( String _nodeName, String _ID ) {
     super( _nodeName, _ID, DEFAULT_RADIUS, DEFAULT_HUE, DEFAULT_ACTIVITY_INDICATOR_HUE );
 
+    nodeHarnessContainer = NodeHarness_findOrCreate( nodeName );
     process = relaySubStream = RelaySubStream_findOrCreate( nodeName, ID );
+
     wrsRing = new Ring( 
       radius + 2,               // outer radius
       (radius + 2 - 2),         // inner radius
