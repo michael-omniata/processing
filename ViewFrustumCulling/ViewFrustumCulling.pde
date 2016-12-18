@@ -30,6 +30,10 @@ ArrayList<Harness> globalHarnesses = new ArrayList<Harness>();
 GlusterHarness  glusterHarness;
 PApplet app = this;
 boolean isClickable = false;
+float fovy;
+float aspect;
+float zNear;
+float zFar;
 
 void setup() {
   size(1400, 1024, OPENGL);
@@ -37,9 +41,14 @@ void setup() {
   smooth();
   sphereDetail( 60 );
   cam = new CrazyCam(this);
-  //float cameraZ = ((height/2.0) / tan(PI*60.0/360.0));
+  fovy   = PI/3.0;
+  aspect = (float)width / (float)height;
+  float cameraZ = ((height/2.0) / tan(PI*60.0/360.0));
+  zNear  = cameraZ / 10.0;
+  zFar   = 1000F * 5;
   //perspective(PI/3.0, width/height, cameraZ/10.0, cameraZ*50.0);
-  perspective(1.047198F, (float)width / (float)height, 0.01F, 1000F*5);
+  //perspective(1.047198F, (float)width / (float)height, 0.01F, 1000F*5);
+  perspective(fovy, aspect, zNear, zFar);
 
   colorMode(HSB, 300, 100, 100, 255);
 
@@ -48,6 +57,15 @@ void setup() {
 
   smooth();
 }
+
+void calculateVisibility( Harness h, float fovy, float aspect, float zNear, float zFar, PVector eye, PVector up, PVector right, PVector forward ) {
+  if ( random(1) < 0.5 ) {
+    h.isViewable = false;
+  } else {
+    h.isViewable = true;
+  }
+}
+
 
 int nextVisibilityCalc = 0;
 void draw() {
@@ -59,11 +77,7 @@ void draw() {
     nextVisibilityCalc = (millis() + 1000);
     println( "Recalculating visibility" );
     for ( Harness h : globalHarnesses ) {
-      if ( random(1) < 0.5 ) {
-        h.isViewable = false;
-      } else {
-        h.isViewable = true;
-      }
+      calculateVisibility( h, fovy, aspect, zNear, zFar, cam.eye, cam.up, cam.right, cam.forward );
     }
   }
 
